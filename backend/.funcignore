@@ -1,0 +1,14 @@
+*.js.map
+*.ts
+.git*
+.vscode
+local.settings.json
+test
+tsconfig.json
+.editorconfig
+.eslintrc
+.prettierrc
+*.md
+node_modules/@types
+src
+azurite
