@@ -373,6 +373,103 @@ Focus on MVP stories to build the foundation:
 
 ---
 
+## Git and PR Conventions
+
+### Branch Naming
+Follow this pattern for feature branches:
+```
+feature/STORY-ID-short-description
+```
+
+**Examples**:
+- `feature/INFRA-002-frontend-setup`
+- `feature/BACK-001-candidate-repository`
+- `feature/FRONT-005-candidate-form`
+
+### Pull Request Title Format
+All pull requests must follow the Conventional Commits format:
+
+```
+<type>: <description> (<ticket-id>)
+```
+
+**Components**:
+- `type`: The type of change (see types below)
+- `description`: Brief description of what the PR does
+- `ticket-id`: The story/ticket ID in parentheses
+
+**Examples**:
+```
+feat: Set up React frontend project with TypeScript and Vite (INFRA-002)
+feat: Set up Azure Functions backend project structure (INFRA-003)
+feat: Implement candidate repository and entity model (BACK-001)
+fix: Correct validation error in candidate email field (BACK-005)
+docs: Add API documentation for candidate endpoints (BACK-010)
+refactor: Simplify candidate service error handling (BACK-003)
+test: Add unit tests for candidate validation (BACK-012)
+```
+
+**Commit Types**:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `refactor`: Code refactoring (no functionality change)
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks, dependency updates
+- `perf`: Performance improvements
+- `style`: Code style/formatting changes
+- `ci`: CI/CD pipeline changes
+
+### Commit Messages
+Follow the same format for commit messages:
+```
+<type>: <description>
+
+Optional longer description explaining the change in detail.
+
+Relates to: <TICKET-ID>
+```
+
+**Example**:
+```
+feat: Add candidate validation service
+
+Implements validation logic for candidate entities including:
+- Email format validation
+- Required field checks
+- Business rule validation
+
+Relates to: BACK-005
+```
+
+### Pull Request Description
+Include the following sections in your PR description:
+
+```markdown
+## Summary
+Brief overview of the changes (2-3 sentences)
+
+### Changes Included
+- Bullet point list of key changes
+- Be specific about what was added/modified/removed
+
+### Technical Details
+- Technologies used
+- Architecture patterns applied
+- Important implementation notes
+
+### Testing Instructions
+1. Step-by-step guide to test the changes
+2. Include setup requirements
+3. Expected outcomes
+
+### Related Issues
+Closes #123
+Relates to STORY-ID
+```
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
