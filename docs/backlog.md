@@ -136,20 +136,22 @@ Each story follows the format:
 
 # Backend Stories
 
-## BACK-001: Create Candidate Entity and Repository
-**Priority**: High | **Estimate**: 3
+## BACK-001: Create Candidate Entity and Repository ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: Backend developer
 **I want**: Domain entity and repository for candidates
 **So that**: I can implement data access following clean architecture
 
 **Acceptance Criteria**:
-- [ ] Candidate entity class created
-- [ ] ICandidateRepository interface defined
-- [ ] CandidateRepository implementation for Azure Table Storage
-- [ ] Entity-to-DTO mappers created
-- [ ] Unit tests for repository
-- [ ] Follows SOLID principles (SRP, DIP)
+- [x] Candidate entity class created
+- [x] ICandidateRepository interface defined
+- [x] CandidateRepository implementation for Azure Table Storage
+- [x] Entity-to-DTO mappers created
+- [x] Unit tests for repository
+- [x] Follows SOLID principles (SRP, DIP)
+
+**Delivered**: PR #3 - 30 tests passing, 84% coverage
 
 ---
 
