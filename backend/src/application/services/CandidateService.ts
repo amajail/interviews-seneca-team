@@ -2,6 +2,7 @@ import { ICandidateRepository } from '../../infrastructure/database/repositories
 import { Candidate, CreateCandidateDto } from '../../domain/entities/Candidate';
 import { ValidationError, NotFoundError } from '../../shared/errors/CustomErrors';
 import { createCandidateSchema } from '../../shared/validation/candidateSchemas';
+import { PaginationOptions, PaginatedResult } from '../../domain/types/Pagination';
 
 export class CandidateService {
   constructor(private readonly candidateRepository: ICandidateRepository) {}
@@ -46,5 +47,9 @@ export class CandidateService {
     }
 
     return candidate;
+  }
+
+  async listCandidates(options?: PaginationOptions): Promise<PaginatedResult<Candidate>> {
+    return await this.candidateRepository.list(options);
   }
 }

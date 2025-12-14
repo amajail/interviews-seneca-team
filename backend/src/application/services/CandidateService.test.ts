@@ -10,11 +10,12 @@ describe('CandidateService', () => {
   beforeEach(() => {
     mockRepository = {
       findAll: jest.fn(),
+      list: jest.fn(),
       findById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    };
+    } as any;
 
     candidateService = new CandidateService(mockRepository);
   });
@@ -353,6 +354,99 @@ describe('CandidateService', () => {
       await expect(candidateService.getCandidateById('test-id')).rejects.toThrow(
         'Database connection failed'
       );
+    });
+  });
+
+  describe('listCandidates', () => {
+    const mockCandidates: Candidate[] = [
+      {
+        id: 'id-1',
+        partitionKey: 'CANDIDATE#2025-01',
+        rowKey: 'id-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        position: 'Developer',
+        status: CandidateStatus.NEW,
+        interviewStage: InterviewStage.NOT_STARTED,
+        applicationDate: new Date('2025-01-01'),
+        createdAt: new Date('2025-01-01'),
+        updatedAt: new Date('2025-01-01'),
+      },
+      {
+        id: 'id-2',
+        partitionKey: 'CANDIDATE#2025-01',
+        rowKey: 'id-2',
+        name: 'Bob',
+        email: 'bob@example.com',
+        position: 'Designer',
+        status: CandidateStatus.INTERVIEWING,
+        interviewStage: InterviewStage.TECHNICAL,
+        applicationDate: new Date('2025-01-02'),
+        createdAt: new Date('2025-01-02'),
+        updatedAt: new Date('2025-01-02'),
+      },
+    ];
+
+    it('should return paginated list of candidates with default options', async () => {
+      const mockResult = {
+        items: mockCandidates,
+        pageSize: 20,
+        continuationToken: undefined,
+      };
+
+      mockRepository.list.mockResolvedValue(mockResult);
+
+      const result = await candidateService.listCandidates();
+
+      expect(result).toEqual(mockResult);
+      expect(result.items).toHaveLength(2);
+      expect(result.pageSize).toBe(20);
+      expect(mockRepository.list).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should pass pagination options to repository', async () => {
+      const options = {
+        pageSize: 10,
+        continuationToken: 'token123',
+        sortBy: 'name' as const,
+        sortDirection: 'asc' as const,
+      };
+
+      const mockResult = {
+        items: mockCandidates,
+        pageSize: 10,
+        continuationToken: 'nextToken',
+      };
+
+      mockRepository.list.mockResolvedValue(mockResult);
+
+      const result = await candidateService.listCandidates(options);
+
+      expect(mockRepository.list).toHaveBeenCalledWith(options);
+      expect(result.pageSize).toBe(10);
+      expect(result.continuationToken).toBe('nextToken');
+    });
+
+    it('should return empty list when no candidates exist', async () => {
+      const mockResult = {
+        items: [],
+        pageSize: 20,
+        continuationToken: undefined,
+      };
+
+      mockRepository.list.mockResolvedValue(mockResult);
+
+      const result = await candidateService.listCandidates();
+
+      expect(result.items).toHaveLength(0);
+      expect(result).toEqual(mockResult);
+    });
+
+    it('should propagate database errors from repository', async () => {
+      const dbError = new Error('Database query failed');
+      mockRepository.list.mockRejectedValue(dbError);
+
+      await expect(candidateService.listCandidates()).rejects.toThrow('Database query failed');
     });
   });
 });

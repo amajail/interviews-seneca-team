@@ -11,18 +11,18 @@ export function toTableEntity(candidate: Candidate): TableEntity {
     id: candidate.id,
     name: candidate.name,
     email: candidate.email,
-    phone: candidate.phone || '',
+    phone: candidate.phone ?? '',
     position: candidate.position,
     status: candidate.status,
     interviewStage: candidate.interviewStage,
     applicationDate: candidate.applicationDate,
-    expectedSalary: candidate.expectedSalary || 0,
-    yearsOfExperience: candidate.yearsOfExperience || 0,
-    notes: candidate.notes || '',
+    expectedSalary: candidate.expectedSalary ?? 0,
+    yearsOfExperience: candidate.yearsOfExperience ?? 0,
+    notes: candidate.notes ?? '',
     createdAt: candidate.createdAt,
     updatedAt: candidate.updatedAt,
-    createdBy: candidate.createdBy || '',
-    updatedBy: candidate.updatedBy || '',
+    createdBy: candidate.createdBy ?? '',
+    updatedBy: candidate.updatedBy ?? '',
   };
 }
 
@@ -32,8 +32,10 @@ export function toTableEntity(candidate: Candidate): TableEntity {
 export function fromTableEntity(entity: TableEntityResult<Record<string, unknown>>): Candidate {
   return {
     id: entity.id as string,
-    partitionKey: entity.partitionKey as string,
-    rowKey: entity.rowKey as string,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    partitionKey: entity.partitionKey!,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    rowKey: entity.rowKey!,
     timestamp: entity.timestamp as Date | undefined,
     eTag: entity.etag as string | undefined,
     name: entity.name as string,
