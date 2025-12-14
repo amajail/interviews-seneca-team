@@ -1,6 +1,6 @@
 import { ICandidateRepository } from '../../infrastructure/database/repositories/ICandidateRepository';
 import { Candidate, CreateCandidateDto } from '../../domain/entities/Candidate';
-import { ValidationError } from '../../shared/errors/CustomErrors';
+import { ValidationError, NotFoundError } from '../../shared/errors/CustomErrors';
 import { createCandidateSchema } from '../../shared/validation/candidateSchemas';
 
 export class CandidateService {
@@ -36,5 +36,15 @@ export class CandidateService {
     const createdCandidate = await this.candidateRepository.create(createDto);
 
     return createdCandidate;
+  }
+
+  async getCandidateById(id: string): Promise<Candidate> {
+    const candidate = await this.candidateRepository.findById(id);
+
+    if (!candidate) {
+      throw new NotFoundError('Candidate', id);
+    }
+
+    return candidate;
   }
 }

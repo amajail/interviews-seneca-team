@@ -1,7 +1,7 @@
 import { CandidateService } from './CandidateService';
 import { ICandidateRepository } from '../../infrastructure/database/repositories/ICandidateRepository';
 import { Candidate, CandidateStatus, InterviewStage } from '../../domain/entities/Candidate';
-import { ValidationError, ConflictError } from '../../shared/errors/CustomErrors';
+import { ValidationError, ConflictError, NotFoundError } from '../../shared/errors/CustomErrors';
 
 describe('CandidateService', () => {
   let candidateService: CandidateService;
@@ -292,6 +292,67 @@ describe('CandidateService', () => {
         expect(error).toBeInstanceOf(ValidationError);
         expect((error as ValidationError).field).toBeDefined();
       }
+    });
+  });
+
+  describe('getCandidateById', () => {
+    const mockCandidate: Candidate = {
+      id: 'test-id',
+      partitionKey: 'CANDIDATE#2025-01',
+      rowKey: 'test-id',
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '+1234567890',
+      position: 'Software Engineer',
+      status: CandidateStatus.NEW,
+      interviewStage: InterviewStage.NOT_STARTED,
+      applicationDate: new Date('2025-01-01'),
+      expectedSalary: 100000,
+      yearsOfExperience: 5,
+      notes: 'Great candidate',
+      createdAt: new Date('2025-01-01'),
+      updatedAt: new Date('2025-01-01'),
+    };
+
+    it('should return candidate when found', async () => {
+      mockRepository.findById.mockResolvedValue(mockCandidate);
+
+      const result = await candidateService.getCandidateById('test-id');
+
+      expect(result).toEqual(mockCandidate);
+      expect(mockRepository.findById).toHaveBeenCalledWith('test-id');
+    });
+
+    it('should throw NotFoundError when candidate does not exist', async () => {
+      mockRepository.findById.mockResolvedValue(null);
+
+      await expect(candidateService.getCandidateById('non-existent-id')).rejects.toThrow(
+        NotFoundError
+      );
+
+      expect(mockRepository.findById).toHaveBeenCalledWith('non-existent-id');
+    });
+
+    it('should include candidate id in NotFoundError message', async () => {
+      mockRepository.findById.mockResolvedValue(null);
+      const testId = 'missing-candidate-123';
+
+      try {
+        await candidateService.getCandidateById(testId);
+        fail('Should have thrown NotFoundError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundError);
+        expect((error as NotFoundError).message).toContain(testId);
+      }
+    });
+
+    it('should propagate database errors from repository', async () => {
+      const dbError = new Error('Database connection failed');
+      mockRepository.findById.mockRejectedValue(dbError);
+
+      await expect(candidateService.getCandidateById('test-id')).rejects.toThrow(
+        'Database connection failed'
+      );
     });
   });
 });
