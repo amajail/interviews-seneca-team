@@ -368,21 +368,21 @@ Each story follows the format:
 
 ---
 
-## FRONT-002: Create Candidate List Page
-**Priority**: High | **Estimate**: 5
+## FRONT-002: Create Candidate List Page ✅
+**Priority**: High | **Estimate**: 5 | **Status**: COMPLETED
 
 **As a**: Recruiter
 **I want**: A page that displays all candidates in a table
 **So that**: I can see an overview of all applicants
 
 **Acceptance Criteria**:
-- [ ] Table displays candidates with key columns
-- [ ] Columns: Name, Email, Position, Status, Stage, Application Date
-- [ ] Pagination controls
-- [ ] Loading state
-- [ ] Empty state
-- [ ] Error handling
-- [ ] Click row to view details
+- [x] Table displays candidates with key columns
+- [x] Columns: Name, Email, Position, Status, Stage, Application Date
+- [x] Pagination controls
+- [x] Loading state
+- [x] Empty state
+- [x] Error handling
+- [x] Click row to view details
 - [ ] Component tests
 
 ---
