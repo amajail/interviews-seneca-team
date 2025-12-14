@@ -34,21 +34,21 @@ Each story follows the format:
 
 ---
 
-## INFRA-002: Set Up Frontend Project Structure
-**Priority**: High | **Estimate**: 3
+## INFRA-002: Set Up Frontend Project Structure ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: Frontend developer
 **I want**: A properly scaffolded React project with TypeScript
 **So that**: I can start developing features with best practices
 
 **Acceptance Criteria**:
-- [ ] React app created with Vite + TypeScript
-- [ ] Folder structure follows clean architecture
-- [ ] ESLint and Prettier configured
-- [ ] TypeScript strict mode enabled
-- [ ] Base tsconfig.json configured
-- [ ] Package.json scripts for dev, build, test, lint
-- [ ] Dependencies installed: React Router, Axios, etc.
+- [x] React app created with Vite + TypeScript
+- [x] Folder structure follows clean architecture
+- [x] ESLint and Prettier configured
+- [x] TypeScript strict mode enabled
+- [x] Base tsconfig.json configured
+- [x] Package.json scripts for dev, build, test, lint
+- [x] Dependencies installed: React Router, Axios, etc.
 
 ---
 
@@ -351,19 +351,19 @@ Each story follows the format:
 
 # Frontend Stories
 
-## FRONT-001: Create Application Layout
-**Priority**: High | **Estimate**: 3
+## FRONT-001: Create Application Layout ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: Frontend developer
 **I want**: Base application layout with navigation
 **So that**: Users have consistent navigation structure
 
 **Acceptance Criteria**:
-- [ ] Header component with app title
-- [ ] Navigation menu (sidebar or top nav)
-- [ ] Main content area
-- [ ] Responsive design
-- [ ] Navigation highlights current page
+- [x] Header component with app title
+- [x] Navigation menu (sidebar or top nav)
+- [x] Main content area
+- [x] Responsive design
+- [x] Navigation highlights current page
 - [ ] Component tests
 
 ---
