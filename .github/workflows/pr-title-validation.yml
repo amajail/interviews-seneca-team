@@ -1,0 +1,52 @@
+name: PR Title Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-pr-title:
+    name: Validate PR Title Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check PR Title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Types allowed in the PR title
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            test
+            chore
+            perf
+            style
+            ci
+
+          # Require ticket ID in parentheses at the end
+          # Format: <type>: <description> (<TICKET-ID>)
+          subjectPattern: ^.+ \([A-Z]+-\d+\)$
+          subjectPatternError: |
+            The PR title must follow this format: <type>: <description> (<TICKET-ID>)
+
+            Examples:
+              ✅ feat: Implement candidate repository and entity model (BACK-001)
+              ✅ fix: Correct validation error in candidate email field (BACK-005)
+              ✅ docs: Add API documentation for candidate endpoints (BACK-010)
+              ❌ Implement BACK-002: Create Candidate API
+              ❌ feat: Add new feature
+
+            Types: feat, fix, docs, refactor, test, chore, perf, style, ci
+            Ticket format: BACK-001, FRONT-002, INFRA-003, etc.
+
+          # Ignore merge commits and bot PRs
+          ignoreLabels: |
+            dependencies
+            bot
+
+          # Validate scope is present (optional)
+          requireScope: false
