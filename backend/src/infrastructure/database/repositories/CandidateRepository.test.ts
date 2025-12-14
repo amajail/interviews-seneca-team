@@ -1,6 +1,11 @@
 import { TableClient } from '@azure/data-tables';
 import { CandidateRepository } from './CandidateRepository';
-import { CandidateStatus, InterviewStage, CreateCandidateDto, UpdateCandidateDto } from '../../../domain/entities/Candidate';
+import {
+  CandidateStatus,
+  InterviewStage,
+  CreateCandidateDto,
+  UpdateCandidateDto,
+} from '../../../domain/entities/Candidate';
 import { NotFoundError, DatabaseError, ConflictError } from '../../../shared/errors/CustomErrors';
 
 // Mock TableClient
@@ -15,7 +20,7 @@ describe('CandidateRepository', () => {
       listEntities: jest.fn(),
       createEntity: jest.fn(),
       updateEntity: jest.fn(),
-      deleteEntity: jest.fn()
+      deleteEntity: jest.fn(),
     } as any;
 
     repository = new CandidateRepository(mockTableClient);
@@ -39,8 +44,8 @@ describe('CandidateRepository', () => {
           interviewStage: InterviewStage.NOT_STARTED,
           applicationDate: new Date('2025-01-01'),
           createdAt: new Date('2025-01-01'),
-          updatedAt: new Date('2025-01-01')
-        }
+          updatedAt: new Date('2025-01-01'),
+        },
       ];
 
       const mockAsyncIterator = {
@@ -48,7 +53,7 @@ describe('CandidateRepository', () => {
           for (const entity of mockEntities) {
             yield entity;
           }
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator as any);
@@ -65,7 +70,7 @@ describe('CandidateRepository', () => {
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator as any);
@@ -97,13 +102,13 @@ describe('CandidateRepository', () => {
         interviewStage: InterviewStage.TECHNICAL,
         applicationDate: new Date('2025-01-01'),
         createdAt: new Date('2025-01-01'),
-        updatedAt: new Date('2025-01-01')
+        updatedAt: new Date('2025-01-01'),
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield mockEntity;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator as any);
@@ -115,8 +120,8 @@ describe('CandidateRepository', () => {
       expect(result?.email).toBe('jane@example.com');
       expect(mockTableClient.listEntities).toHaveBeenCalledWith({
         queryOptions: {
-          filter: "rowKey eq 'test-id'"
-        }
+          filter: "rowKey eq 'test-id'",
+        },
       });
     });
 
@@ -124,7 +129,7 @@ describe('CandidateRepository', () => {
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator as any);
@@ -151,7 +156,7 @@ describe('CandidateRepository', () => {
       position: 'Software Engineer',
       expectedSalary: 100000,
       yearsOfExperience: 5,
-      notes: 'Great candidate'
+      notes: 'Great candidate',
     };
 
     it('should create a new candidate successfully', async () => {
@@ -159,7 +164,7 @@ describe('CandidateRepository', () => {
       const emptyIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(emptyIterator as any);
@@ -181,13 +186,13 @@ describe('CandidateRepository', () => {
       const dtoWithStatus: CreateCandidateDto = {
         ...validCandidateDto,
         status: CandidateStatus.SCREENING,
-        interviewStage: InterviewStage.PHONE_SCREEN
+        interviewStage: InterviewStage.PHONE_SCREEN,
       };
 
       const emptyIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(emptyIterator as any);
@@ -203,13 +208,13 @@ describe('CandidateRepository', () => {
       const existingCandidate = {
         partitionKey: 'CANDIDATE#2025-01',
         rowKey: 'existing-id',
-        email: validCandidateDto.email
+        email: validCandidateDto.email,
       };
 
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);
@@ -224,7 +229,7 @@ describe('CandidateRepository', () => {
       const emptyIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(emptyIterator as any);
@@ -247,14 +252,14 @@ describe('CandidateRepository', () => {
       applicationDate: new Date('2025-01-01'),
       createdAt: new Date('2025-01-01'),
       updatedAt: new Date('2025-01-01'),
-      etag: 'old-etag'
+      etag: 'old-etag',
     };
 
     it('should update candidate successfully', async () => {
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);
@@ -262,7 +267,7 @@ describe('CandidateRepository', () => {
 
       const updateDto: UpdateCandidateDto = {
         name: 'Updated Name',
-        status: CandidateStatus.INTERVIEWING
+        status: CandidateStatus.INTERVIEWING,
       };
 
       const result = await repository.update('update-id', updateDto);
@@ -278,14 +283,14 @@ describe('CandidateRepository', () => {
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);
       mockTableClient.updateEntity.mockResolvedValue({} as any);
 
       const updateDto: UpdateCandidateDto = {
-        name: 'New Name'
+        name: 'New Name',
       };
 
       const result = await repository.update('update-id', updateDto);
@@ -300,13 +305,13 @@ describe('CandidateRepository', () => {
       const emptyIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(emptyIterator as any);
 
       const updateDto: UpdateCandidateDto = {
-        name: 'New Name'
+        name: 'New Name',
       };
 
       await expect(repository.update('non-existent-id', updateDto)).rejects.toThrow(NotFoundError);
@@ -316,14 +321,14 @@ describe('CandidateRepository', () => {
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);
       mockTableClient.updateEntity.mockRejectedValue(new Error('Update failed'));
 
       const updateDto: UpdateCandidateDto = {
-        name: 'New Name'
+        name: 'New Name',
       };
 
       await expect(repository.update('update-id', updateDto)).rejects.toThrow(DatabaseError);
@@ -342,14 +347,14 @@ describe('CandidateRepository', () => {
       interviewStage: InterviewStage.COMPLETED,
       applicationDate: new Date('2025-01-01'),
       createdAt: new Date('2025-01-01'),
-      updatedAt: new Date('2025-01-01')
+      updatedAt: new Date('2025-01-01'),
     };
 
     it('should delete candidate successfully', async () => {
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);
@@ -367,7 +372,7 @@ describe('CandidateRepository', () => {
       const emptyIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(emptyIterator as any);
@@ -379,7 +384,7 @@ describe('CandidateRepository', () => {
       const mockIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockIterator as any);

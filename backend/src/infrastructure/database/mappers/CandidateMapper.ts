@@ -22,7 +22,7 @@ export function toTableEntity(candidate: Candidate): TableEntity {
     createdAt: candidate.createdAt,
     updatedAt: candidate.updatedAt,
     createdBy: candidate.createdBy || '',
-    updatedBy: candidate.updatedBy || ''
+    updatedBy: candidate.updatedBy || '',
   };
 }
 
@@ -49,6 +49,6 @@ export function fromTableEntity(entity: TableEntityResult<Record<string, unknown
     createdAt: new Date(entity.createdAt as Date),
     updatedAt: new Date(entity.updatedAt as Date),
     createdBy: entity.createdBy ? (entity.createdBy as string) : undefined,
-    updatedBy: entity.updatedBy ? (entity.updatedBy as string) : undefined
+    updatedBy: entity.updatedBy ? (entity.updatedBy as string) : undefined,
   };
 }

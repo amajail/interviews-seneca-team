@@ -1,5 +1,11 @@
 import { TableClient } from '@azure/data-tables';
-import { Candidate, CandidateStatus, CreateCandidateDto, InterviewStage, UpdateCandidateDto } from '../../../domain/entities/Candidate';
+import {
+  Candidate,
+  CandidateStatus,
+  CreateCandidateDto,
+  InterviewStage,
+  UpdateCandidateDto,
+} from '../../../domain/entities/Candidate';
 import { ICandidateRepository } from './ICandidateRepository';
 import { toTableEntity, fromTableEntity } from '../mappers/CandidateMapper';
 import { NotFoundError, DatabaseError, ConflictError } from '../../../shared/errors/CustomErrors';
@@ -44,8 +50,8 @@ export class CandidateRepository implements ICandidateRepository {
       // For findById, we need to search across all partitions since we don't know the partition key
       const entities = this.tableClient.listEntities({
         queryOptions: {
-          filter: `rowKey eq '${id}'`
-        }
+          filter: `rowKey eq '${id}'`,
+        },
       });
 
       for await (const entity of entities) {
@@ -71,8 +77,8 @@ export class CandidateRepository implements ICandidateRepository {
       // Check for duplicate email
       const existingCandidates = this.tableClient.listEntities({
         queryOptions: {
-          filter: `email eq '${candidateDto.email}'`
-        }
+          filter: `email eq '${candidateDto.email}'`,
+        },
       });
 
       for await (const _existing of existingCandidates) {
@@ -102,7 +108,7 @@ export class CandidateRepository implements ICandidateRepository {
         yearsOfExperience: candidateDto.yearsOfExperience,
         notes: candidateDto.notes,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
       };
 
       const tableEntity = toTableEntity(candidate);
@@ -142,7 +148,7 @@ export class CandidateRepository implements ICandidateRepository {
         partitionKey: existing.partitionKey,
         rowKey: existing.rowKey,
         createdAt: existing.createdAt,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       const tableEntity = toTableEntity(updated);
@@ -150,7 +156,7 @@ export class CandidateRepository implements ICandidateRepository {
       // Update with optimistic concurrency using ETag if available
       const updateMode = existing.eTag ? 'Replace' : 'Merge';
       await this.tableClient.updateEntity(tableEntity, updateMode, {
-        etag: existing.eTag
+        etag: existing.eTag,
       });
 
       return updated;

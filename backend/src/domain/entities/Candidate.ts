@@ -29,7 +29,7 @@ export enum CandidateStatus {
   OFFER = 'offer',
   HIRED = 'hired',
   REJECTED = 'rejected',
-  WITHDRAWN = 'withdrawn'
+  WITHDRAWN = 'withdrawn',
 }
 
 export enum InterviewStage {
@@ -38,7 +38,7 @@ export enum InterviewStage {
   TECHNICAL = 'technical',
   BEHAVIORAL = 'behavioral',
   FINAL = 'final',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
 }
 
 export interface CreateCandidateDto {
