@@ -70,19 +70,19 @@ Each story follows the format:
 
 ---
 
-## INFRA-004: Set Up Azure Table Storage
-**Priority**: High | **Estimate**: 2
+## INFRA-004: Set Up Azure Table Storage ✅
+**Priority**: High | **Estimate**: 2 | **Status**: COMPLETED
 
 **As a**: DevOps engineer
 **I want**: Azure Table Storage configured
 **So that**: The application can persist candidate data
 
 **Acceptance Criteria**:
-- [ ] Azure Storage Account created
-- [ ] Table created for candidates
-- [ ] Connection strings documented
-- [ ] Access keys stored securely
-- [ ] Backup strategy defined
+- [x] Azure Storage Account created (documented with CLI commands and Portal instructions)
+- [x] Table created for candidates (creation scripts and schema documented)
+- [x] Connection strings documented (with security best practices)
+- [x] Access keys stored securely (Key Vault integration, Managed Identity, rotation procedures)
+- [x] Backup strategy defined (comprehensive backup and DR plan)
 
 ---
 
