@@ -19,7 +19,7 @@ Each story follows the format:
 # Infrastructure Stories
 
 ## INFRA-001: Set Up GitHub Repository
-**Priority**: High | **Estimate**: 1
+**Priority**: High | **Estimate**: 1 | **Status**: MOSTLY COMPLETE
 
 **As a**: Development team
 **I want**: A GitHub repository with proper structure
@@ -27,8 +27,8 @@ Each story follows the format:
 
 **Acceptance Criteria**:
 - [x] Repository created: `interviews-seneca-team`
-- [ ] README.md with project description
-- [ ] .gitignore configured for Node.js and React
+- [x] README.md with project description
+- [x] .gitignore configured for Node.js and React
 - [ ] Branch protection rules on main branch
 - [ ] LICENSE file added
 
@@ -52,21 +52,21 @@ Each story follows the format:
 
 ---
 
-## INFRA-003: Set Up Backend Project Structure
-**Priority**: High | **Estimate**: 3
+## INFRA-003: Set Up Backend Project Structure ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: Backend developer
 **I want**: An Azure Functions project with TypeScript
 **So that**: I can develop serverless backend APIs
 
 **Acceptance Criteria**:
-- [ ] Azure Functions project initialized (v4)
-- [ ] TypeScript configured
-- [ ] Folder structure follows clean architecture
-- [ ] ESLint and Prettier configured
-- [ ] local.settings.json template created
-- [ ] Azure Functions Core Tools configured
-- [ ] Dependencies installed: @azure/data-tables, etc.
+- [x] Azure Functions project initialized (v4)
+- [x] TypeScript configured
+- [x] Folder structure follows clean architecture
+- [x] ESLint and Prettier configured
+- [x] local.settings.json template created
+- [x] Azure Functions Core Tools configured
+- [x] Dependencies installed: @azure/data-tables, etc.
 
 ---
 
