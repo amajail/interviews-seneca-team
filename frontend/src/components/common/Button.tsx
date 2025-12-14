@@ -50,11 +50,7 @@ export const Button: React.FC<ButtonProps> = ({
   `.trim();
 
   return (
-    <button
-      className={combinedClassName}
-      disabled={disabled || loading}
-      {...props}
-    >
+    <button className={combinedClassName} disabled={disabled || loading} {...props}>
       {loading ? (
         <span className="flex items-center justify-center">
           <svg

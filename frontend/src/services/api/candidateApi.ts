@@ -81,7 +81,9 @@ export class CandidateApiService {
     return response.data;
   }
 
-  async importCandidates(file: File): Promise<{ success: number; failed: number; errors: string[] }> {
+  async importCandidates(
+    file: File
+  ): Promise<{ success: number; failed: number; errors: string[] }> {
     const formData = new FormData();
     formData.append('file', file);
 

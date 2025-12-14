@@ -120,7 +120,8 @@ export const CandidateTable: React.FC<CandidateTableProps> = ({ candidates, onRo
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className={getStatusBadgeClass(candidate.currentStatus)}>
-                  {candidate.currentStatus.charAt(0).toUpperCase() + candidate.currentStatus.slice(1)}
+                  {candidate.currentStatus.charAt(0).toUpperCase() +
+                    candidate.currentStatus.slice(1)}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">

@@ -113,12 +113,7 @@ export const CandidateList: React.FC = () => {
           actionLabel="Add Candidate"
           onAction={handleAddCandidate}
           icon={
-            <svg
-              className="h-12 w-12"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

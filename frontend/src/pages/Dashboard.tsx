@@ -11,7 +11,8 @@ export const Dashboard: React.FC = () => {
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
       <div className="bg-white rounded-lg shadow p-6">
         <p className="text-gray-600">
-          Welcome to the Interview Tracking System. This dashboard will show key metrics and recent activity.
+          Welcome to the Interview Tracking System. This dashboard will show key metrics and recent
+          activity.
         </p>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">

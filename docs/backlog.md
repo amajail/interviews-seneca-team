@@ -387,21 +387,21 @@ Each story follows the format:
 
 ---
 
-## FRONT-003: Create Candidate Detail Page
-**Priority**: High | **Estimate**: 5
+## FRONT-003: Create Candidate Detail Page ✅
+**Priority**: High | **Estimate**: 5 | **Status**: COMPLETED
 
 **As a**: Recruiter
 **I want**: A page showing full candidate information
 **So that**: I can review all details about an applicant
 
 **Acceptance Criteria**:
-- [ ] Displays all candidate fields
-- [ ] Organized in sections (Contact, Interview, Status)
-- [ ] Loading state
-- [ ] Error handling (404)
-- [ ] Edit button navigates to edit page
-- [ ] Delete button with confirmation
-- [ ] Back navigation
+- [x] Displays all candidate fields
+- [x] Organized in sections (Contact, Interview, Status)
+- [x] Loading state
+- [x] Error handling (404)
+- [x] Edit button navigates to edit page
+- [x] Delete button with confirmation
+- [x] Back navigation
 - [ ] Component tests
 
 ---

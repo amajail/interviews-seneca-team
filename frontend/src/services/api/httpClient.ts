@@ -102,10 +102,12 @@ class HttpClient {
       return response.data.data;
     }
 
-    throw response.data.error || {
-      code: 'UNKNOWN_ERROR',
-      message: 'An unknown error occurred',
-    };
+    throw (
+      response.data.error || {
+        code: 'UNKNOWN_ERROR',
+        message: 'An unknown error occurred',
+      }
+    );
   }
 
   getAxiosInstance(): AxiosInstance {

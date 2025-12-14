@@ -32,7 +32,12 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-b-lg">
       <div className="flex-1 flex justify-between sm:hidden">
-        <Button onClick={onPreviousPage} disabled={!hasPreviousPage} variant="secondary" size="small">
+        <Button
+          onClick={onPreviousPage}
+          disabled={!hasPreviousPage}
+          variant="secondary"
+          size="small"
+        >
           Previous
         </Button>
         <Button onClick={onNextPage} disabled={!hasNextPage} variant="secondary" size="small">
@@ -52,7 +57,10 @@ export const Pagination: React.FC<PaginationProps> = ({
           )}
         </div>
         <div>
-          <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <nav
+            className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+            aria-label="Pagination"
+          >
             <Button
               onClick={onPreviousPage}
               disabled={!hasPreviousPage}
