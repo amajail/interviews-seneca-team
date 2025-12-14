@@ -9,6 +9,7 @@ import {
 import { ICandidateRepository } from './ICandidateRepository';
 import { toTableEntity, fromTableEntity } from '../mappers/CandidateMapper';
 import { NotFoundError, DatabaseError, ConflictError } from '../../../shared/errors/CustomErrors';
+import { PaginationOptions, PaginatedResult } from '../../../domain/types/Pagination';
 
 /**
  * Repository implementation for Candidate entity using Azure Table Storage.
@@ -81,6 +82,7 @@ export class CandidateRepository implements ICandidateRepository {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for await (const _existing of existingCandidates) {
         throw new ConflictError(`Candidate with email ${candidateDto.email} already exists`);
       }
@@ -90,7 +92,9 @@ export class CandidateRepository implements ICandidateRepository {
       const now = new Date();
 
       // Partition key strategy: CANDIDATE#{year-month}
-      const partitionKey = `CANDIDATE#${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const year = String(now.getFullYear());
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const partitionKey = `CANDIDATE#${year}-${month}`;
       const rowKey = id;
 
       const candidate: Candidate = {
@@ -101,9 +105,9 @@ export class CandidateRepository implements ICandidateRepository {
         email: candidateDto.email,
         phone: candidateDto.phone,
         position: candidateDto.position,
-        status: candidateDto.status || CandidateStatus.NEW,
-        interviewStage: candidateDto.interviewStage || InterviewStage.NOT_STARTED,
-        applicationDate: candidateDto.applicationDate || now,
+        status: candidateDto.status ?? CandidateStatus.NEW,
+        interviewStage: candidateDto.interviewStage ?? InterviewStage.NOT_STARTED,
+        applicationDate: candidateDto.applicationDate ?? now,
         expectedSalary: candidateDto.expectedSalary,
         yearsOfExperience: candidateDto.yearsOfExperience,
         notes: candidateDto.notes,
@@ -166,6 +170,97 @@ export class CandidateRepository implements ICandidateRepository {
       }
       throw new DatabaseError(`Failed to update candidate with id ${id}`, error as Error);
     }
+  }
+
+  /**
+   * Lists candidates with pagination and sorting support.
+   * @param options - Pagination and sorting options
+   * @returns Promise<PaginatedResult<Candidate>> Paginated list of candidates
+   * @throws DatabaseError if the query fails
+   */
+  async list(options?: PaginationOptions): Promise<PaginatedResult<Candidate>> {
+    try {
+      const pageSize = options?.pageSize ?? 20;
+      const candidates: Candidate[] = [];
+
+      const iterator = this.tableClient.listEntities();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let page: any;
+
+      // Get first page (or page identified by continuation token)
+      if (options?.continuationToken) {
+        // Resume from continuation token
+        page = await iterator
+          .byPage({
+            continuationToken: options.continuationToken,
+            maxPageSize: pageSize,
+          })
+          .next();
+      } else {
+        // Get first page
+        page = await iterator.byPage({ maxPageSize: pageSize }).next();
+      }
+
+      // Convert entities to domain objects
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (page.value) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        for (const entity of page.value) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          candidates.push(fromTableEntity(entity));
+        }
+      }
+
+      // Apply sorting if requested
+      if (options?.sortBy) {
+        this.sortCandidates(candidates, options.sortBy, options.sortDirection);
+      }
+
+      // Get continuation token for next page
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const continuationToken: string | undefined = page.value?.continuationToken;
+
+      return {
+        items: candidates,
+        pageSize,
+        continuationToken,
+      };
+    } catch (error) {
+      throw new DatabaseError('Failed to list candidates', error as Error);
+    }
+  }
+
+  /**
+   * Sorts candidates array in place
+   * @param candidates - Array of candidates to sort
+   * @param sortBy - Field to sort by
+   * @param sortDirection - Sort direction (asc or desc)
+   */
+  private sortCandidates(
+    candidates: Candidate[],
+    sortBy: 'name' | 'applicationDate' | 'status',
+    sortDirection: 'asc' | 'desc' = 'asc'
+  ): void {
+    candidates.sort((a, b) => {
+      let compareValue = 0;
+
+      switch (sortBy) {
+        case 'name':
+          compareValue = a.name.localeCompare(b.name);
+          break;
+        case 'applicationDate': {
+          const dateA = a.applicationDate.getTime();
+          const dateB = b.applicationDate.getTime();
+          compareValue = dateA - dateB;
+          break;
+        }
+        case 'status':
+          compareValue = a.status.localeCompare(b.status);
+          break;
+      }
+
+      return sortDirection === 'asc' ? compareValue : -compareValue;
+    });
   }
 
   /**
