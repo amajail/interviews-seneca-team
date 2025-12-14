@@ -4,7 +4,8 @@
  * Implements interceptors for request/response handling
  */
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_CONFIG } from '../../constants';
 import type { ApiResponse, ApiError } from '../../models';
 
