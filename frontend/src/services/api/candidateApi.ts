@@ -12,9 +12,52 @@ import type {
   CandidateFilters,
   PaginatedResponse,
 } from '../../models';
+import {
+  BackendCandidateStatus,
+  BackendInterviewStage,
+  type BackendCreateCandidateDto,
+} from '../../models/BackendCandidate';
 
 export class CandidateApiService {
   private readonly basePath = '/candidates';
+
+  /**
+   * Maps frontend CreateCandidateDto to backend-compatible format
+   * Transforms field names to match backend schema
+   */
+  private mapToBackendDto(frontendDto: CreateCandidateDto): BackendCreateCandidateDto {
+    // Map frontend status to backend status enum
+    const statusMap: Record<string, BackendCandidateStatus> = {
+      new: BackendCandidateStatus.NEW,
+      screening: BackendCandidateStatus.SCREENING,
+      interviewing: BackendCandidateStatus.INTERVIEWING,
+      offered: BackendCandidateStatus.OFFER,
+      hired: BackendCandidateStatus.HIRED,
+      rejected: BackendCandidateStatus.REJECTED,
+    };
+
+    // Map frontend interview stage to backend interview stage enum
+    const stageMap: Record<string, BackendInterviewStage> = {
+      initial_screening: BackendInterviewStage.NOT_STARTED,
+      phone_interview: BackendInterviewStage.PHONE_SCREEN,
+      technical_interview: BackendInterviewStage.TECHNICAL,
+      behavioral_interview: BackendInterviewStage.BEHAVIORAL,
+      final_interview: BackendInterviewStage.FINAL,
+    };
+
+    return {
+      name: frontendDto.fullName,
+      email: frontendDto.email,
+      phone: frontendDto.phone || undefined,
+      position: frontendDto.positionAppliedFor,
+      status: frontendDto.currentStatus ? statusMap[frontendDto.currentStatus] : undefined,
+      interviewStage: frontendDto.interviewStage ? stageMap[frontendDto.interviewStage] : undefined,
+      applicationDate: frontendDto.applicationDate,
+      expectedSalary: frontendDto.expectedSalary,
+      yearsOfExperience: frontendDto.yearsOfExperience,
+      notes: frontendDto.interviewNotes || undefined,
+    };
+  }
 
   async getCandidates(
     filters?: CandidateFilters,
@@ -44,7 +87,8 @@ export class CandidateApiService {
   }
 
   async createCandidate(data: CreateCandidateDto): Promise<Candidate> {
-    return httpClient.post<Candidate>(this.basePath, data);
+    const backendDto = this.mapToBackendDto(data);
+    return httpClient.post<Candidate>(this.basePath, backendDto);
   }
 
   async updateCandidate(id: string, data: UpdateCandidateDto): Promise<Candidate> {
