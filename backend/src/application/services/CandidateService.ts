@@ -11,10 +11,7 @@ export class CandidateService {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0];
-      throw new ValidationError(
-        firstError.message,
-        firstError.path.join('.')
-      );
+      throw new ValidationError(firstError.message, firstError.path.join('.'));
     }
 
     const validatedData = validationResult.data;
@@ -27,13 +24,13 @@ export class CandidateService {
       status: validatedData.status,
       interviewStage: validatedData.interviewStage,
       applicationDate: validatedData.applicationDate
-        ? (typeof validatedData.applicationDate === 'string'
-            ? new Date(validatedData.applicationDate)
-            : validatedData.applicationDate)
+        ? typeof validatedData.applicationDate === 'string'
+          ? new Date(validatedData.applicationDate)
+          : validatedData.applicationDate
         : undefined,
       expectedSalary: validatedData.expectedSalary,
       yearsOfExperience: validatedData.yearsOfExperience,
-      notes: validatedData.notes
+      notes: validatedData.notes,
     };
 
     const createdCandidate = await this.candidateRepository.create(createDto);

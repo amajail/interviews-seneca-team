@@ -1,4 +1,8 @@
-import { Candidate, CreateCandidateDto, UpdateCandidateDto } from '../../../domain/entities/Candidate';
+import {
+  Candidate,
+  CreateCandidateDto,
+  UpdateCandidateDto,
+} from '../../../domain/entities/Candidate';
 
 export interface ICandidateRepository {
   findAll(): Promise<Candidate[]>;

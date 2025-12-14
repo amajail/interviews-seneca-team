@@ -1,6 +1,9 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 
-export async function getCandidates(_request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function getCandidates(
+  _request: HttpRequest,
+  context: InvocationContext
+): Promise<HttpResponseInit> {
   context.log('Get candidates endpoint called');
 
   // TODO: Implement in BACK-004
@@ -8,8 +11,8 @@ export async function getCandidates(_request: HttpRequest, context: InvocationCo
     status: 200,
     jsonBody: {
       message: 'Candidates endpoint - to be implemented in BACK-004',
-      data: []
-    }
+      data: [],
+    },
   };
 }
 
@@ -17,5 +20,5 @@ app.http('getCandidates', {
   methods: ['GET'],
   authLevel: 'anonymous',
   route: 'candidates',
-  handler: getCandidates
+  handler: getCandidates,
 });

@@ -4,7 +4,10 @@ import { CandidateRepository } from '../../infrastructure/database/repositories/
 import { tableClient } from '../../infrastructure/config/tableStorageConfig';
 import { ValidationError, ConflictError, DatabaseError } from '../../shared/errors/CustomErrors';
 
-export async function createCandidate(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function createCandidate(
+  request: HttpRequest,
+  context: InvocationContext
+): Promise<HttpResponseInit> {
   context.log('POST /api/candidates endpoint called');
 
   try {
@@ -17,7 +20,7 @@ export async function createCandidate(request: HttpRequest, context: InvocationC
 
     return {
       status: 201,
-      jsonBody: createdCandidate
+      jsonBody: createdCandidate,
     };
   } catch (error) {
     context.error('Error creating candidate:', error);
@@ -28,8 +31,8 @@ export async function createCandidate(request: HttpRequest, context: InvocationC
         jsonBody: {
           error: 'Validation Error',
           message: error.message,
-          field: error.field
-        }
+          field: error.field,
+        },
       };
     }
 
@@ -38,8 +41,8 @@ export async function createCandidate(request: HttpRequest, context: InvocationC
         status: 409,
         jsonBody: {
           error: 'Conflict',
-          message: error.message
-        }
+          message: error.message,
+        },
       };
     }
 
@@ -48,8 +51,8 @@ export async function createCandidate(request: HttpRequest, context: InvocationC
         status: 500,
         jsonBody: {
           error: 'Internal Server Error',
-          message: 'An error occurred while processing your request'
-        }
+          message: 'An error occurred while processing your request',
+        },
       };
     }
 
@@ -57,8 +60,8 @@ export async function createCandidate(request: HttpRequest, context: InvocationC
       status: 500,
       jsonBody: {
         error: 'Internal Server Error',
-        message: 'An unexpected error occurred'
-      }
+        message: 'An unexpected error occurred',
+      },
     };
   }
 }
@@ -67,5 +70,5 @@ app.http('createCandidate', {
   methods: ['POST'],
   authLevel: 'anonymous',
   route: 'candidates',
-  handler: createCandidate
+  handler: createCandidate,
 });

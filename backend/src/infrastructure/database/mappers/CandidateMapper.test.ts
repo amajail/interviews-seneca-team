@@ -20,7 +20,7 @@ describe('CandidateMapper', () => {
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-10'),
     createdBy: 'admin@example.com',
-    updatedBy: 'admin@example.com'
+    updatedBy: 'admin@example.com',
   };
 
   describe('toTableEntity', () => {
@@ -58,7 +58,7 @@ describe('CandidateMapper', () => {
         interviewStage: InterviewStage.NOT_STARTED,
         applicationDate: new Date('2025-01-01'),
         createdAt: new Date('2025-01-01'),
-        updatedAt: new Date('2025-01-01')
+        updatedAt: new Date('2025-01-01'),
       };
 
       const result = toTableEntity(candidateWithoutOptionals);
@@ -92,7 +92,7 @@ describe('CandidateMapper', () => {
       createdAt: new Date('2025-01-05'),
       updatedAt: new Date('2025-01-15'),
       createdBy: 'hr@example.com',
-      updatedBy: 'manager@example.com'
+      updatedBy: 'manager@example.com',
     };
 
     it('should map TableEntity to Candidate correctly', () => {
@@ -122,7 +122,9 @@ describe('CandidateMapper', () => {
       expect(result.applicationDate).toBeInstanceOf(Date);
       expect(result.createdAt).toBeInstanceOf(Date);
       expect(result.updatedAt).toBeInstanceOf(Date);
-      expect(result.applicationDate.getTime()).toBe(new Date(mockTableEntity.applicationDate as Date).getTime());
+      expect(result.applicationDate.getTime()).toBe(
+        new Date(mockTableEntity.applicationDate as Date).getTime()
+      );
     });
 
     it('should handle empty optional fields as undefined', () => {
@@ -144,7 +146,7 @@ describe('CandidateMapper', () => {
         createdAt: new Date('2025-01-01'),
         updatedAt: new Date('2025-01-01'),
         createdBy: '',
-        updatedBy: ''
+        updatedBy: '',
       };
 
       const result = fromTableEntity(minimalEntity);
@@ -170,7 +172,7 @@ describe('CandidateMapper', () => {
         interviewStage: InterviewStage.PHONE_SCREEN,
         applicationDate: new Date('2025-01-01'),
         createdAt: new Date('2025-01-01'),
-        updatedAt: new Date('2025-01-01')
+        updatedAt: new Date('2025-01-01'),
       };
 
       const result = fromTableEntity(entityWithoutOptionals);

@@ -8,8 +8,8 @@ jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
     listEntities: jest.fn(),
     createEntity: jest.fn(),
     updateEntity: jest.fn(),
-    deleteEntity: jest.fn()
-  }
+    deleteEntity: jest.fn(),
+  },
 }));
 
 describe('createCandidate Function', () => {
@@ -19,7 +19,7 @@ describe('createCandidate Function', () => {
   beforeEach(() => {
     mockContext = {
       log: jest.fn(),
-      error: jest.fn()
+      error: jest.fn(),
     } as any;
 
     mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
@@ -30,7 +30,7 @@ describe('createCandidate Function', () => {
     return {
       method: 'POST',
       url: 'http://localhost:7071/api/candidates',
-      json: async () => body
+      json: async () => body,
     } as HttpRequest;
   };
 
@@ -43,13 +43,13 @@ describe('createCandidate Function', () => {
         phone: '+1234567890',
         expectedSalary: 100000,
         yearsOfExperience: 5,
-        notes: 'Excellent candidate'
+        notes: 'Excellent candidate',
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator - no duplicate email
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
@@ -70,13 +70,13 @@ describe('createCandidate Function', () => {
       const requestBody = {
         name: 'Jane Smith',
         email: 'jane@example.com',
-        position: 'Designer'
+        position: 'Designer',
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
@@ -97,13 +97,13 @@ describe('createCandidate Function', () => {
         email: 'bob@example.com',
         position: 'Manager',
         status: CandidateStatus.INTERVIEWING,
-        interviewStage: InterviewStage.TECHNICAL
+        interviewStage: InterviewStage.TECHNICAL,
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
@@ -122,7 +122,7 @@ describe('createCandidate Function', () => {
     it('should return 400 when name is missing', async () => {
       const requestBody = {
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const request = createMockRequest(requestBody);
@@ -136,7 +136,7 @@ describe('createCandidate Function', () => {
     it('should return 400 when email is missing', async () => {
       const requestBody = {
         name: 'John Doe',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const request = createMockRequest(requestBody);
@@ -150,7 +150,7 @@ describe('createCandidate Function', () => {
       const requestBody = {
         name: 'John Doe',
         email: 'invalid-email',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const request = createMockRequest(requestBody);
@@ -164,7 +164,7 @@ describe('createCandidate Function', () => {
     it('should return 400 when position is missing', async () => {
       const requestBody = {
         name: 'John Doe',
-        email: 'test@example.com'
+        email: 'test@example.com',
       };
 
       const request = createMockRequest(requestBody);
@@ -178,7 +178,7 @@ describe('createCandidate Function', () => {
       const requestBody = {
         name: 'a'.repeat(101),
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const request = createMockRequest(requestBody);
@@ -193,7 +193,7 @@ describe('createCandidate Function', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        expectedSalary: -1000
+        expectedSalary: -1000,
       };
 
       const request = createMockRequest(requestBody);
@@ -208,7 +208,7 @@ describe('createCandidate Function', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        yearsOfExperience: -5
+        yearsOfExperience: -5,
       };
 
       const request = createMockRequest(requestBody);
@@ -223,7 +223,7 @@ describe('createCandidate Function', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        status: 'invalid_status'
+        status: 'invalid_status',
       };
 
       const request = createMockRequest(requestBody);
@@ -239,19 +239,19 @@ describe('createCandidate Function', () => {
       const requestBody = {
         name: 'John Doe',
         email: 'existing@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const existingCandidate = {
         partitionKey: 'CANDIDATE#2025-01',
         rowKey: 'existing-id',
-        email: 'existing@example.com'
+        email: 'existing@example.com',
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           yield existingCandidate;
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
@@ -270,13 +270,13 @@ describe('createCandidate Function', () => {
       const requestBody = {
         name: 'John Doe',
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       const mockAsyncIterator = {
         [Symbol.asyncIterator]: async function* () {
           // Empty iterator
-        }
+        },
       };
 
       mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
@@ -296,7 +296,7 @@ describe('createCandidate Function', () => {
       const request = {
         method: 'POST',
         url: 'http://localhost:7071/api/candidates',
-        json: jest.fn().mockRejectedValue(new Error('Unexpected error'))
+        json: jest.fn().mockRejectedValue(new Error('Unexpected error')),
       } as any;
 
       const response = await createCandidate(request, mockContext);

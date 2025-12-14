@@ -7,7 +7,7 @@ export interface TableStorageConfig {
 
 export function getTableStorageConfig(): TableStorageConfig {
   const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-  const tableName = process.env.TABLE_NAME || 'candidates';
+  const tableName = process.env.TABLE_NAME ?? 'candidates';
 
   if (!connectionString) {
     throw new Error('AZURE_STORAGE_CONNECTION_STRING environment variable is required');
@@ -15,7 +15,7 @@ export function getTableStorageConfig(): TableStorageConfig {
 
   return {
     connectionString,
-    tableName
+    tableName,
   };
 }
 

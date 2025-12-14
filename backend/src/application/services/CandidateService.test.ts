@@ -13,7 +13,7 @@ describe('CandidateService', () => {
       findById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
-      delete: jest.fn()
+      delete: jest.fn(),
     };
 
     candidateService = new CandidateService(mockRepository);
@@ -33,7 +33,7 @@ describe('CandidateService', () => {
       interviewStage: InterviewStage.NOT_STARTED,
       expectedSalary: 100000,
       yearsOfExperience: 5,
-      notes: 'Great candidate'
+      notes: 'Great candidate',
     };
 
     const mockCreatedCandidate: Candidate = {
@@ -43,7 +43,7 @@ describe('CandidateService', () => {
       ...validCandidateData,
       applicationDate: new Date('2025-01-01'),
       createdAt: new Date('2025-01-01'),
-      updatedAt: new Date('2025-01-01')
+      updatedAt: new Date('2025-01-01'),
     };
 
     it('should create a candidate with valid data', async () => {
@@ -56,7 +56,7 @@ describe('CandidateService', () => {
         expect.objectContaining({
           name: validCandidateData.name,
           email: validCandidateData.email,
-          position: validCandidateData.position
+          position: validCandidateData.position,
         })
       );
     });
@@ -65,7 +65,7 @@ describe('CandidateService', () => {
       const minimalData = {
         name: 'Jane Smith',
         email: 'jane@example.com',
-        position: 'Designer'
+        position: 'Designer',
       };
 
       mockRepository.create.mockResolvedValue(mockCreatedCandidate);
@@ -77,7 +77,7 @@ describe('CandidateService', () => {
         expect.objectContaining({
           name: minimalData.name,
           email: minimalData.email,
-          position: minimalData.position
+          position: minimalData.position,
         })
       );
     });
@@ -85,7 +85,7 @@ describe('CandidateService', () => {
     it('should handle applicationDate as ISO string', async () => {
       const dataWithDateString = {
         ...validCandidateData,
-        applicationDate: '2025-01-15T10:00:00.000Z'
+        applicationDate: '2025-01-15T10:00:00.000Z',
       };
 
       mockRepository.create.mockResolvedValue(mockCreatedCandidate);
@@ -94,7 +94,7 @@ describe('CandidateService', () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          applicationDate: new Date('2025-01-15T10:00:00.000Z')
+          applicationDate: new Date('2025-01-15T10:00:00.000Z'),
         })
       );
     });
@@ -103,7 +103,7 @@ describe('CandidateService', () => {
       const date = new Date('2025-01-15');
       const dataWithDate = {
         ...validCandidateData,
-        applicationDate: date
+        applicationDate: date,
       };
 
       mockRepository.create.mockResolvedValue(mockCreatedCandidate);
@@ -112,7 +112,7 @@ describe('CandidateService', () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          applicationDate: date
+          applicationDate: date,
         })
       );
     });
@@ -120,82 +120,68 @@ describe('CandidateService', () => {
     it('should throw ValidationError when name is missing', async () => {
       const invalidData = {
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when name is empty', async () => {
       const invalidData = {
         name: '',
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when email is missing', async () => {
       const invalidData = {
         name: 'John Doe',
-        position: 'Developer'
+        position: 'Developer',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when email format is invalid', async () => {
       const invalidData = {
         name: 'John Doe',
         email: 'invalid-email',
-        position: 'Developer'
+        position: 'Developer',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when position is missing', async () => {
       const invalidData = {
         name: 'John Doe',
-        email: 'test@example.com'
+        email: 'test@example.com',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when name exceeds max length', async () => {
       const invalidData = {
         name: 'a'.repeat(101),
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when position exceeds max length', async () => {
       const invalidData = {
         name: 'John Doe',
         email: 'test@example.com',
-        position: 'a'.repeat(101)
+        position: 'a'.repeat(101),
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when notes exceed max length', async () => {
@@ -203,12 +189,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        notes: 'a'.repeat(1001)
+        notes: 'a'.repeat(1001),
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when expectedSalary is negative', async () => {
@@ -216,12 +200,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        expectedSalary: -1000
+        expectedSalary: -1000,
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when expectedSalary is zero', async () => {
@@ -229,12 +211,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        expectedSalary: 0
+        expectedSalary: 0,
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError when yearsOfExperience is negative', async () => {
@@ -242,12 +222,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        yearsOfExperience: -1
+        yearsOfExperience: -1,
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should accept zero yearsOfExperience', async () => {
@@ -255,7 +233,7 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        yearsOfExperience: 0
+        yearsOfExperience: 0,
       };
 
       mockRepository.create.mockResolvedValue(mockCreatedCandidate);
@@ -264,7 +242,7 @@ describe('CandidateService', () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          yearsOfExperience: 0
+          yearsOfExperience: 0,
         })
       );
     });
@@ -274,12 +252,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        status: 'invalid_status'
+        status: 'invalid_status',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should throw ValidationError for invalid interviewStage enum value', async () => {
@@ -287,12 +263,10 @@ describe('CandidateService', () => {
         name: 'John Doe',
         email: 'test@example.com',
         position: 'Developer',
-        interviewStage: 'invalid_stage'
+        interviewStage: 'invalid_stage',
       };
 
-      await expect(candidateService.createCandidate(invalidData))
-        .rejects
-        .toThrow(ValidationError);
+      await expect(candidateService.createCandidate(invalidData)).rejects.toThrow(ValidationError);
     });
 
     it('should propagate ConflictError from repository (duplicate email)', async () => {
@@ -300,15 +274,15 @@ describe('CandidateService', () => {
         new ConflictError('A candidate with this email already exists')
       );
 
-      await expect(candidateService.createCandidate(validCandidateData))
-        .rejects
-        .toThrow(ConflictError);
+      await expect(candidateService.createCandidate(validCandidateData)).rejects.toThrow(
+        ConflictError
+      );
     });
 
     it('should include field name in ValidationError', async () => {
       const invalidData = {
         email: 'test@example.com',
-        position: 'Developer'
+        position: 'Developer',
       };
 
       try {
