@@ -134,6 +134,262 @@ Each story follows the format:
 
 ---
 
+## INFRA-008: Configure Azure Authentication for GitHub Actions
+**Priority**: High | **Estimate**: 2
+
+**As a**: DevOps engineer
+**I want**: Secure authentication from GitHub Actions to Azure
+**So that**: Pipelines can deploy infrastructure without storing secrets
+
+**Acceptance Criteria**:
+- [ ] Azure AD App Registration created
+- [ ] Service Principal created
+- [ ] OIDC federated credentials configured (recommended) OR Service Principal with secret
+- [ ] Role assignments configured (Contributor on subscription/resource group)
+- [ ] GitHub secrets configured (AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID)
+- [ ] Authentication tested with test workflow
+- [ ] Documentation created explaining OIDC vs Service Principal options
+
+**Technical Notes**:
+- OIDC (recommended): No secrets stored, tokens auto-rotate, more secure
+- Service Principal: Simpler setup, but requires secret management
+- Reference: infrastructure-deployment-plan.md sections on Authentication
+
+---
+
+## INFRA-009: Create Bicep Infrastructure Modules
+**Priority**: High | **Estimate**: 5
+
+**As a**: DevOps engineer
+**I want**: Reusable Bicep modules for all Azure resources
+**So that**: Infrastructure can be deployed consistently and repeatably
+
+**Acceptance Criteria**:
+- [ ] Create `infrastructure/bicep/` folder structure
+- [ ] Module: `storage-account.bicep` (Azure Storage Account with Table Storage)
+- [ ] Module: `function-app.bicep` (Azure Functions with App Service Plan)
+- [ ] Module: `static-web-app.bicep` (Azure Static Web Apps)
+- [ ] Module: `key-vault.bicep` (Azure Key Vault with access policies)
+- [ ] Module: `app-insights.bicep` (Application Insights with Log Analytics)
+- [ ] Main orchestration: `main.bicep` (combines all modules)
+- [ ] Parameter files: `dev.bicepparam`, `staging.bicepparam`, `prod.bicepparam`
+- [ ] All modules include proper outputs (resource IDs, connection strings, etc.)
+- [ ] Bicep linting passes with no errors
+- [ ] Documentation for each module
+
+**Resource Naming Convention**:
+- Storage: `st{appname}{env}{region}{instance}` (e.g., `stintsenecadeveastus001`)
+- Functions: `func-{appname}-{env}-{region}-{instance}` (e.g., `func-intseneca-dev-eastus-001`)
+- Key Vault: `kv-{appname}-{env}-{region}-{instance}` (e.g., `kv-intseneca-dev-eastus-001`)
+- App Insights: `appi-{appname}-{env}-{region}-{instance}`
+- Static Web App: `swa-{appname}-{env}-{region}-{instance}`
+
+---
+
+## INFRA-010: Deploy Dev Environment Infrastructure
+**Priority**: High | **Estimate**: 3
+
+**As a**: DevOps engineer
+**I want**: Automated deployment of dev environment infrastructure
+**So that**: Development team has a working Azure environment
+
+**Acceptance Criteria**:
+- [ ] Resource Group created: `rg-intseneca-dev-eastus`
+- [ ] Storage Account deployed with `candidates` and `auditlogs` tables
+- [ ] Azure Functions deployed with proper runtime configuration
+- [ ] Static Web App deployed and configured
+- [ ] Key Vault deployed with access policies for Function App
+- [ ] Application Insights deployed and integrated
+- [ ] Managed Identity configured for Function App
+- [ ] Connection strings stored in Key Vault
+- [ ] Function App configured to read secrets from Key Vault
+- [ ] Deployment verified with smoke tests
+- [ ] All resources tagged appropriately (environment, cost-center, etc.)
+
+**Dependencies**:
+- INFRA-008 (Azure authentication)
+- INFRA-009 (Bicep modules)
+
+---
+
+## INFRA-011: Create Infrastructure Deployment Pipelines
+**Priority**: High | **Estimate**: 5
+
+**As a**: DevOps engineer
+**I want**: GitHub Actions workflows for infrastructure deployment
+**So that**: Infrastructure changes are automatically validated and deployed
+
+**Acceptance Criteria**:
+- [ ] Workflow: `infra-validate.yml` - validates Bicep on PR
+  - Bicep linting
+  - Bicep build (compile to ARM)
+  - Azure resource validation (dry-run)
+  - Cost estimation (optional)
+  - Comment results on PR
+- [ ] Workflow: `infra-deploy-dev.yml` - deploys to dev
+  - Triggered on push to `main` (infrastructure changes)
+  - Manual trigger (workflow_dispatch)
+  - Azure login via OIDC
+  - Deploy Bicep templates
+  - Configure Key Vault secrets
+  - Run smoke tests
+  - Notification on success/failure
+- [ ] Workflow: `infra-deploy-staging.yml` - deploys to staging (future)
+  - Triggered on release tags
+  - Optional approval gate
+- [ ] Workflow: `infra-deploy-prod.yml` - deploys to production (future)
+  - Triggered on version tags (v*.*.*)
+  - Required approval gate
+  - Enhanced smoke tests
+- [ ] GitHub Environments configured (development, staging, production)
+- [ ] Environment protection rules configured
+- [ ] Workflow status badges added to README
+
+**Dependencies**:
+- INFRA-008 (Azure authentication)
+- INFRA-009 (Bicep modules)
+
+---
+
+## INFRA-012: Configure Multi-Environment Strategy
+**Priority**: Medium | **Estimate**: 3
+
+**As a**: DevOps engineer
+**I want**: Separate environments for dev, staging, and production
+**So that**: We can test changes before production deployment
+
+**Acceptance Criteria**:
+- [ ] Environment strategy documented (dev, staging, prod)
+- [ ] Naming conventions applied across all environments
+- [ ] Resource groups created for each environment
+- [ ] Parameter files configured for each environment (different SKUs, settings)
+- [ ] Staging environment deployed (same as dev but different resource group)
+- [ ] Production environment deployed with production-grade SKUs
+  - Storage: Standard_GRS (geo-redundant)
+  - Functions: Premium plan (always-on, VNet integration)
+  - Static Web App: Standard tier
+  - Application Insights: Enhanced retention
+- [ ] Environment-specific secrets in Key Vault
+- [ ] GitHub Environment protection rules configured
+- [ ] Promotion strategy documented (dev → staging → prod)
+- [ ] Rollback procedures documented
+
+**Environment Differences**:
+| Resource | Dev | Staging | Production |
+|----------|-----|---------|------------|
+| Storage SKU | Standard_LRS | Standard_LRS | Standard_GRS |
+| Function Plan | Consumption | Consumption | Premium EP1 |
+| Static Web App | Free | Free | Standard |
+| Cost/month | ~$7.50 | ~$7.50 | ~$175 |
+
+---
+
+## INFRA-013: Implement Infrastructure Security Best Practices
+**Priority**: High | **Estimate**: 3
+
+**As a**: Security team
+**I want**: Infrastructure deployed with security best practices
+**So that**: Application and data are protected
+
+**Acceptance Criteria**:
+- [ ] Managed Identities configured for all Azure resources
+- [ ] Key Vault access via Managed Identity (no connection strings in app settings)
+- [ ] RBAC roles assigned with least privilege principle
+- [ ] Storage Account: HTTPS-only, minimum TLS 1.2, blob public access disabled
+- [ ] Key Vault: Soft delete enabled, purge protection enabled (prod)
+- [ ] Network security: IP restrictions configured (staging/prod)
+- [ ] Diagnostic logging enabled for all resources
+- [ ] Azure Policy compliance verified
+- [ ] Security scan of infrastructure code (Checkov, tfsec, or Azure Security Center)
+- [ ] Secrets rotation strategy documented
+- [ ] Security documentation updated
+
+**RBAC Assignments**:
+- Function App → Storage Table Data Contributor
+- Function App → Key Vault Secrets User
+- GitHub Actions SP → Contributor (resource group scoped)
+
+---
+
+## INFRA-014: Configure Infrastructure Monitoring and Alerts
+**Priority**: Medium | **Estimate**: 2
+
+**As a**: Operations team
+**I want**: Monitoring and alerts for infrastructure health
+**So that**: We can detect and respond to issues quickly
+
+**Acceptance Criteria**:
+- [ ] Azure Monitor dashboard created for infrastructure overview
+- [ ] Deployment history tracked and visualized
+- [ ] Cost monitoring and alerts configured
+- [ ] Resource health alerts configured
+- [ ] Alert: Deployment failure (send to DevOps team)
+- [ ] Alert: Resource unavailable (critical)
+- [ ] Alert: Cost anomaly detected (> 20% variance)
+- [ ] Alert: Storage account high latency
+- [ ] Alert: Function App high error rate
+- [ ] Notification channels configured (email, Slack, Teams)
+- [ ] On-call rotation configured for critical alerts
+- [ ] Runbooks created for common alerts
+
+**Alerts Configuration**:
+- Critical alerts → PagerDuty/on-call
+- Warning alerts → Email/Slack
+- Info alerts → Dashboard only
+
+---
+
+## INFRA-015: Create Infrastructure Documentation and Runbooks
+**Priority**: Medium | **Estimate**: 2
+
+**As a**: DevOps team
+**I want**: Comprehensive infrastructure documentation
+**So that**: Team members can deploy, maintain, and troubleshoot infrastructure
+
+**Acceptance Criteria**:
+- [ ] Infrastructure deployment plan finalized (infrastructure-deployment-plan.md)
+- [ ] Azure authentication setup guide (OIDC vs Service Principal)
+- [ ] Bicep module documentation (each module documented)
+- [ ] Deployment workflow documentation
+- [ ] Runbook: Deploy new environment
+- [ ] Runbook: Handle deployment failure
+- [ ] Runbook: Disaster recovery procedures
+- [ ] Runbook: Scale resources (upgrade/downgrade SKUs)
+- [ ] Runbook: Rotate secrets and credentials
+- [ ] Runbook: Cost optimization review
+- [ ] Troubleshooting guide with common issues
+- [ ] Team training materials created
+- [ ] Architecture diagrams updated with infrastructure details
+
+---
+
+## INFRA-016: Implement Infrastructure Cost Optimization
+**Priority**: Low | **Estimate**: 2
+
+**As a**: Finance team
+**I want**: Infrastructure costs optimized
+**So that**: We stay within budget
+
+**Acceptance Criteria**:
+- [ ] Cost analysis performed for all environments
+- [ ] Azure Cost Management + Billing configured
+- [ ] Budget alerts set up (monthly, quarterly)
+- [ ] Resource tagging strategy implemented (cost-center, environment, owner)
+- [ ] Unused resources identified and removed
+- [ ] Right-sizing recommendations applied
+- [ ] Azure Reservations evaluated for production (30-50% savings)
+- [ ] Lifecycle policies configured for Storage Account
+- [ ] Application Insights sampling configured (reduce ingestion costs)
+- [ ] Dev/staging resources scheduled for auto-shutdown (nights, weekends)
+- [ ] Cost optimization report created (monthly)
+
+**Cost Targets**:
+- Dev: < $10/month
+- Staging: < $10/month
+- Production: < $200/month
+
+---
+
 # Backend Stories
 
 ## BACK-001: Create Candidate Entity and Repository
@@ -743,9 +999,14 @@ Each story follows the format:
 
 ## Phase 1 - MVP (Must Have)
 Infrastructure foundation and core CRUD operations:
-- INFRA-001, INFRA-002, INFRA-003, INFRA-004, INFRA-006
-- BACK-001, BACK-002, BACK-003, BACK-004, BACK-005, BACK-010, BACK-011, BACK-012
-- FRONT-001, FRONT-002, FRONT-003, FRONT-004, FRONT-005, FRONT-011, FRONT-012, FRONT-013
+- **Infrastructure**: INFRA-001 ✅, INFRA-002 ✅, INFRA-003 ✅, INFRA-004 ✅, INFRA-006, INFRA-008, INFRA-009, INFRA-010
+- **Backend**: BACK-001, BACK-002, BACK-003, BACK-004, BACK-005, BACK-010, BACK-011, BACK-012
+- **Frontend**: FRONT-001 ✅, FRONT-002 ✅, FRONT-003, FRONT-004, FRONT-005, FRONT-011, FRONT-012, FRONT-013
+
+**Infrastructure MVP Focus**:
+- INFRA-008: Configure Azure authentication (OIDC) for GitHub Actions
+- INFRA-009: Create Bicep modules for all core resources
+- INFRA-010: Deploy dev environment infrastructure automatically
 
 ## Phase 2 - Enhanced Features (Should Have)
 Search, filtering, and status management:
@@ -758,14 +1019,25 @@ Dashboard and data migration:
 - FRONT-008, FRONT-010
 
 ## Phase 4 - Production Readiness (Must Have for Production)
-CI/CD, monitoring, security:
-- INFRA-005, INFRA-007
-- NFR-001, NFR-002, NFR-004
+CI/CD, monitoring, security, and multi-environment:
+- **Infrastructure**: INFRA-005, INFRA-007, INFRA-011, INFRA-012, INFRA-013, INFRA-014, INFRA-015
+- **Quality**: NFR-001, NFR-002, NFR-004
+
+**Infrastructure Production Focus**:
+- INFRA-011: Create automated deployment pipelines (validate, deploy-dev, deploy-staging, deploy-prod)
+- INFRA-012: Configure multi-environment strategy (staging + production)
+- INFRA-013: Implement security best practices (Managed Identity, RBAC, network security)
+- INFRA-014: Configure comprehensive monitoring and alerts
+- INFRA-015: Create deployment runbooks and documentation
 
 ## Phase 5 - Optimization (Nice to Have)
-Performance and accessibility:
-- FRONT-014
-- NFR-003, NFR-005
+Performance, accessibility, and cost optimization:
+- **Infrastructure**: INFRA-016
+- **Frontend**: FRONT-014
+- **Quality**: NFR-003, NFR-005
+
+**Infrastructure Optimization**:
+- INFRA-016: Implement cost optimization (auto-shutdown, reservations, right-sizing)
 
 ---
 
