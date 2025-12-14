@@ -1,3 +1,5 @@
+import { TableClient } from '@azure/data-tables';
+
 export interface TableStorageConfig {
   connectionString: string;
   tableName: string;
@@ -16,3 +18,10 @@ export function getTableStorageConfig(): TableStorageConfig {
     tableName
   };
 }
+
+// Create and export the table client instance
+const config = getTableStorageConfig();
+export const tableClient = TableClient.fromConnectionString(
+  config.connectionString,
+  config.tableName
+);
