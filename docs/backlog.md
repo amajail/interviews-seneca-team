@@ -18,8 +18,8 @@ Each story follows the format:
 
 # Infrastructure Stories
 
-## INFRA-001: Set Up GitHub Repository
-**Priority**: High | **Estimate**: 1 | **Status**: MOSTLY COMPLETE
+## INFRA-001: Set Up GitHub Repository ✅
+**Priority**: High | **Estimate**: 1 | **Status**: COMPLETED
 
 **As a**: Development team
 **I want**: A GitHub repository with proper structure
@@ -29,8 +29,8 @@ Each story follows the format:
 - [x] Repository created: `interviews-seneca-team`
 - [x] README.md with project description
 - [x] .gitignore configured for Node.js and React
-- [ ] Branch protection rules on main branch
-- [ ] LICENSE file added
+- [x] Branch protection rules on main branch
+- [x] LICENSE file added
 
 ---
 
