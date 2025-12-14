@@ -59,6 +59,8 @@ export interface CreateCandidateDto {
   interviewerNames?: string[];
   interviewNotes?: string;
   nextFollowUpDate?: string;
+  expectedSalary?: number;
+  yearsOfExperience?: number;
 }
 
 export interface UpdateCandidateDto extends Partial<CreateCandidateDto> {
