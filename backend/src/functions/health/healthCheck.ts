@@ -1,9 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
 
-export async function healthCheck(
-  _request: HttpRequest,
-  context: InvocationContext
-): Promise<HttpResponseInit> {
+export function healthCheck(_request: HttpRequest, context: InvocationContext): HttpResponseInit {
   context.log('Health check endpoint called');
 
   return {

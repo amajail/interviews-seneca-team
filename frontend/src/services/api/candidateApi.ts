@@ -22,10 +22,13 @@ export class CandidateApiService {
   private readonly basePath = '/candidates';
 
   /**
-   * Maps frontend CreateCandidateDto to backend-compatible format
+   * Maps frontend DTO to backend-compatible format
    * Transforms field names to match backend schema
+   * Accepts both CreateCandidateDto and UpdateCandidateDto (partial)
    */
-  private mapToBackendDto(frontendDto: CreateCandidateDto): BackendCreateCandidateDto {
+  private mapToBackendDto(
+    frontendDto: CreateCandidateDto | UpdateCandidateDto
+  ): Partial<BackendCreateCandidateDto> {
     // Map frontend status to backend status enum
     const statusMap: Record<string, BackendCandidateStatus> = {
       new: BackendCandidateStatus.NEW,
@@ -48,14 +51,14 @@ export class CandidateApiService {
     return {
       name: frontendDto.fullName,
       email: frontendDto.email,
-      phone: frontendDto.phone || undefined,
+      phone: frontendDto.phone,
       position: frontendDto.positionAppliedFor,
       status: frontendDto.currentStatus ? statusMap[frontendDto.currentStatus] : undefined,
       interviewStage: frontendDto.interviewStage ? stageMap[frontendDto.interviewStage] : undefined,
       applicationDate: frontendDto.applicationDate,
       expectedSalary: frontendDto.expectedSalary,
       yearsOfExperience: frontendDto.yearsOfExperience,
-      notes: frontendDto.interviewNotes || undefined,
+      notes: frontendDto.interviewNotes,
     };
   }
 
@@ -91,11 +94,7 @@ export class CandidateApiService {
     return httpClient.post<Candidate>(this.basePath, backendDto);
   }
 
-  async updateCandidate(
-    id: string,
-    data: UpdateCandidateDto,
-    eTag?: string
-  ): Promise<Candidate> {
+  async updateCandidate(id: string, data: UpdateCandidateDto, eTag?: string): Promise<Candidate> {
     const backendDto = this.mapToBackendDto(data);
     const headers = eTag ? { 'If-Match': eTag } : {};
 

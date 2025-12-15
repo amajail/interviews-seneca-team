@@ -45,7 +45,12 @@ export const EditCandidate: React.FC = () => {
         </div>
       </div>
 
-      <CandidateForm mode="edit" candidateId={id} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <CandidateForm
+        mode="edit"
+        candidateId={id}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </div>
   );
 };
