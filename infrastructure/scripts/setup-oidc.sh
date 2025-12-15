@@ -40,15 +40,27 @@ az ad sp create --id $APP_ID --output none
 
 echo "✅ Service Principal created"
 
-# Step 3: Assign Contributor role
-echo "🔑 Step 3/5: Assigning Contributor role..."
+# Step 3: Assign required roles
+echo "🔑 Step 3/5: Assigning required roles..."
+
+# Contributor role (for creating/managing resources)
 az role assignment create \
   --assignee $APP_ID \
   --role Contributor \
   --scope /subscriptions/$SUBSCRIPTION_ID \
   --output none
 
-echo "✅ Contributor role assigned"
+echo "  ✓ Contributor role assigned"
+
+# User Access Administrator role (for creating RBAC role assignments)
+az role assignment create \
+  --assignee $APP_ID \
+  --role "User Access Administrator" \
+  --scope /subscriptions/$SUBSCRIPTION_ID \
+  --output none
+
+echo "  ✓ User Access Administrator role assigned"
+echo "✅ All required roles assigned"
 
 # Step 4: Configure federated credentials
 echo "🔗 Step 4/5: Configuring OIDC federated credentials..."
