@@ -82,4 +82,36 @@ export class CandidateService {
   async listCandidates(options?: PaginationOptions): Promise<PaginatedResult<Candidate>> {
     return await this.candidateRepository.list(options);
   }
+
+  async updateCandidate(id: string, candidateData: unknown): Promise<Candidate> {
+    const validationResult = updateCandidateSchema.safeParse(candidateData);
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      throw new ValidationError(firstError.message, firstError.path.join('.'));
+    }
+
+    const validatedData = validationResult.data;
+
+    // Check if at least one field is being updated
+    if (Object.keys(validatedData).length === 0) {
+      throw new ValidationError('At least one field must be provided for update', '');
+    }
+
+    const updateDto: UpdateCandidateDto = {
+      name: validatedData.name,
+      email: validatedData.email,
+      phone: validatedData.phone,
+      position: validatedData.position,
+      status: validatedData.status,
+      interviewStage: validatedData.interviewStage,
+      expectedSalary: validatedData.expectedSalary,
+      yearsOfExperience: validatedData.yearsOfExperience,
+      notes: validatedData.notes,
+    };
+
+    const updatedCandidate = await this.candidateRepository.update(id, updateDto);
+
+    return updatedCandidate;
+  }
 }
