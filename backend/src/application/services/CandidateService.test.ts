@@ -449,4 +449,246 @@ describe('CandidateService', () => {
       await expect(candidateService.listCandidates()).rejects.toThrow('Database query failed');
     });
   });
+
+  describe('updateCandidate', () => {
+    const mockCandidate: Candidate = {
+      id: 'test-id',
+      partitionKey: 'CANDIDATE#2025-01',
+      rowKey: 'test-id',
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '+1234567890',
+      position: 'Software Engineer',
+      status: CandidateStatus.NEW,
+      interviewStage: InterviewStage.NOT_STARTED,
+      applicationDate: new Date('2025-01-01'),
+      expectedSalary: 100000,
+      yearsOfExperience: 5,
+      notes: 'Great candidate',
+      createdAt: new Date('2025-01-01'),
+      updatedAt: new Date('2025-01-01'),
+    };
+
+    it('should update candidate with valid data', async () => {
+      const updateData = {
+        name: 'John Updated',
+        status: CandidateStatus.INTERVIEWING,
+      };
+
+      const updatedCandidate = {
+        ...mockCandidate,
+        name: 'John Updated',
+        status: CandidateStatus.INTERVIEWING,
+        updatedAt: new Date(),
+      };
+
+      mockRepository.update.mockResolvedValue(updatedCandidate);
+
+      const result = await candidateService.updateCandidate('test-id', updateData);
+
+      expect(result).toEqual(updatedCandidate);
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'test-id',
+        expect.objectContaining({
+          name: 'John Updated',
+          status: CandidateStatus.INTERVIEWING,
+        })
+      );
+    });
+
+    it('should update single field', async () => {
+      const updateData = {
+        notes: 'Updated notes',
+      };
+
+      const updatedCandidate = {
+        ...mockCandidate,
+        notes: 'Updated notes',
+        updatedAt: new Date(),
+      };
+
+      mockRepository.update.mockResolvedValue(updatedCandidate);
+
+      const result = await candidateService.updateCandidate('test-id', updateData);
+
+      expect(result).toEqual(updatedCandidate);
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'test-id',
+        expect.objectContaining({
+          notes: 'Updated notes',
+        })
+      );
+    });
+
+    it('should update multiple fields', async () => {
+      const updateData = {
+        status: CandidateStatus.OFFER,
+        interviewStage: InterviewStage.COMPLETED,
+        expectedSalary: 120000,
+      };
+
+      const updatedCandidate = {
+        ...mockCandidate,
+        ...updateData,
+        updatedAt: new Date(),
+      };
+
+      mockRepository.update.mockResolvedValue(updatedCandidate);
+
+      const result = await candidateService.updateCandidate('test-id', updateData);
+
+      expect(result).toEqual(updatedCandidate);
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        'test-id',
+        expect.objectContaining(updateData)
+      );
+    });
+
+    it('should throw ValidationError when no fields are provided', async () => {
+      const emptyUpdate = {};
+
+      await expect(candidateService.updateCandidate('test-id', emptyUpdate)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when email format is invalid', async () => {
+      const invalidData = {
+        email: 'invalid-email',
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when name is empty', async () => {
+      const invalidData = {
+        name: '',
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when name exceeds max length', async () => {
+      const invalidData = {
+        name: 'a'.repeat(101),
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when position is empty', async () => {
+      const invalidData = {
+        position: '',
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when position exceeds max length', async () => {
+      const invalidData = {
+        position: 'a'.repeat(101),
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when notes exceed max length', async () => {
+      const invalidData = {
+        notes: 'a'.repeat(1001),
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when expectedSalary is negative', async () => {
+      const invalidData = {
+        expectedSalary: -1000,
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError when yearsOfExperience is negative', async () => {
+      const invalidData = {
+        yearsOfExperience: -1,
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError for invalid status enum value', async () => {
+      const invalidData = {
+        status: 'invalid_status',
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should throw ValidationError for invalid interviewStage enum value', async () => {
+      const invalidData = {
+        interviewStage: 'invalid_stage',
+      };
+
+      await expect(candidateService.updateCandidate('test-id', invalidData)).rejects.toThrow(
+        ValidationError
+      );
+    });
+
+    it('should propagate NotFoundError from repository', async () => {
+      const updateData = {
+        name: 'Updated Name',
+      };
+
+      mockRepository.update.mockRejectedValue(new NotFoundError('Candidate', 'non-existent-id'));
+
+      await expect(candidateService.updateCandidate('non-existent-id', updateData)).rejects.toThrow(
+        NotFoundError
+      );
+    });
+
+    it('should propagate database errors from repository', async () => {
+      const updateData = {
+        name: 'Updated Name',
+      };
+
+      const dbError = new Error('Database update failed');
+      mockRepository.update.mockRejectedValue(dbError);
+
+      await expect(candidateService.updateCandidate('test-id', updateData)).rejects.toThrow(
+        'Database update failed'
+      );
+    });
+
+    it('should include field name in ValidationError', async () => {
+      const invalidData = {
+        email: 'invalid',
+      };
+
+      try {
+        await candidateService.updateCandidate('test-id', invalidData);
+        fail('Should have thrown ValidationError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError);
+        expect((error as ValidationError).field).toBeDefined();
+      }
+    });
+  });
 });
