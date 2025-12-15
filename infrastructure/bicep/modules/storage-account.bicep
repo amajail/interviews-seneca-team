@@ -40,6 +40,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   tags: union(tags, {
     environment: environment
   })
+  // System-assigned Managed Identity
+  // Enables customer-managed encryption keys and Azure AD authentication
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     accessTier: 'Hot'
     minimumTlsVersion: 'TLS1_2'
@@ -58,6 +63,8 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
         }
       }
       keySource: 'Microsoft.Storage'
+      // Note: Can be upgraded to 'Microsoft.Keyvault' for customer-managed keys
+      // requiring Storage Account's Managed Identity to access Key Vault
     }
     networkAcls: {
       defaultAction: 'Allow'
@@ -99,3 +106,6 @@ output connectionString string = 'DefaultEndpointsProtocol=https;AccountName=${s
 
 @description('The primary access key')
 output primaryKey string = storageAccount.listKeys().keys[0].value
+
+@description('The principal ID of the Storage Account managed identity')
+output principalId string = storageAccount.identity.principalId
