@@ -691,4 +691,44 @@ describe('CandidateService', () => {
       }
     });
   });
+
+  describe('deleteCandidate', () => {
+    it('should delete candidate successfully', async () => {
+      mockRepository.delete.mockResolvedValue(undefined);
+
+      await candidateService.deleteCandidate('test-id');
+
+      expect(mockRepository.delete).toHaveBeenCalledWith('test-id');
+    });
+
+    it('should propagate NotFoundError from repository', async () => {
+      mockRepository.delete.mockRejectedValue(new NotFoundError('Candidate', 'non-existent-id'));
+
+      await expect(candidateService.deleteCandidate('non-existent-id')).rejects.toThrow(
+        NotFoundError
+      );
+    });
+
+    it('should propagate database errors from repository', async () => {
+      const dbError = new Error('Database delete failed');
+      mockRepository.delete.mockRejectedValue(dbError);
+
+      await expect(candidateService.deleteCandidate('test-id')).rejects.toThrow(
+        'Database delete failed'
+      );
+    });
+
+    it('should include candidate ID in error when not found', async () => {
+      const testId = 'missing-id-123';
+      mockRepository.delete.mockRejectedValue(new NotFoundError('Candidate', testId));
+
+      try {
+        await candidateService.deleteCandidate(testId);
+        fail('Should have thrown NotFoundError');
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundError);
+        expect((error as NotFoundError).message).toContain(testId);
+      }
+    });
+  });
 });

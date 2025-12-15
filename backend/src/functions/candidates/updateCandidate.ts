@@ -7,8 +7,6 @@ import {
   NotFoundError,
   DatabaseError,
   PreconditionFailedError,
-  ConflictError,
-  DatabaseError, 
 } from '../../shared/errors/CustomErrors';
 import { createSuccessResponse, createErrorResponse } from '../../shared/utils/responseHelper';
 import { mapCandidateToFrontend } from '../../shared/utils/candidateMapper';
