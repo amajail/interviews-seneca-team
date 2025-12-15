@@ -3,6 +3,8 @@ import { CandidateService } from '../../application/services/CandidateService';
 import { CandidateRepository } from '../../infrastructure/database/repositories/CandidateRepository';
 import { tableClient } from '../../infrastructure/config/tableStorageConfig';
 import { ValidationError, ConflictError, DatabaseError } from '../../shared/errors/CustomErrors';
+import { createSuccessResponse, createErrorResponse } from '../../shared/utils/responseHelper';
+import { mapCandidateToFrontend } from '../../shared/utils/candidateMapper';
 
 export async function createCandidate(
   request: HttpRequest,
@@ -17,52 +19,31 @@ export async function createCandidate(
     const candidateService = new CandidateService(candidateRepository);
 
     const createdCandidate = await candidateService.createCandidate(body);
+    const frontendCandidate = mapCandidateToFrontend(createdCandidate);
 
-    return {
-      status: 201,
-      jsonBody: createdCandidate,
-    };
+    return createSuccessResponse(frontendCandidate, 201);
   } catch (error) {
     context.error('Error creating candidate:', error);
 
     if (error instanceof ValidationError) {
-      return {
-        status: 400,
-        jsonBody: {
-          error: 'Validation Error',
-          message: error.message,
-          field: error.field,
-        },
-      };
+      return createErrorResponse('VALIDATION_ERROR', error.message, 400, {
+        field: error.field,
+      });
     }
 
     if (error instanceof ConflictError) {
-      return {
-        status: 409,
-        jsonBody: {
-          error: 'Conflict',
-          message: error.message,
-        },
-      };
+      return createErrorResponse('CONFLICT_ERROR', error.message, 409);
     }
 
     if (error instanceof DatabaseError) {
-      return {
-        status: 500,
-        jsonBody: {
-          error: 'Internal Server Error',
-          message: 'An error occurred while processing your request',
-        },
-      };
+      return createErrorResponse(
+        'DATABASE_ERROR',
+        'An error occurred while processing your request',
+        500
+      );
     }
 
-    return {
-      status: 500,
-      jsonBody: {
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred',
-      },
-    };
+    return createErrorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
   }
 }
 
