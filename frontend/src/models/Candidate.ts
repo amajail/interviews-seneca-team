@@ -21,6 +21,8 @@ export interface Candidate {
   interviewerNames: string[];
   interviewNotes?: string;
   nextFollowUpDate?: string;
+  expectedSalary?: number;
+  yearsOfExperience?: number;
   decisionStatus?: string;
   offerDetails?: string;
   createdAt: string;
@@ -65,9 +67,7 @@ export interface CreateCandidateDto {
   yearsOfExperience?: number;
 }
 
-export interface UpdateCandidateDto extends Partial<CreateCandidateDto> {
-  // id comes from URL parameter, not from DTO
-}
+export type UpdateCandidateDto = Partial<CreateCandidateDto>;
 
 export interface CandidateFilters {
   search?: string;

@@ -94,8 +94,7 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
             yearsOfExperience: candidate.yearsOfExperience,
           });
         } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Failed to load candidate';
+          const errorMessage = error instanceof Error ? error.message : 'Failed to load candidate';
           showError(errorMessage);
         } finally {
           setLoadingCandidate(false);
