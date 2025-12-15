@@ -1,0 +1,123 @@
+name: Deploy Infrastructure - Dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/bicep/**'
+      - '.github/workflows/infra-deploy-dev.yml'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  deploy-dev-infrastructure:
+    name: Deploy to Dev Environment
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-eastus/overview
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify Azure CLI access
+        run: |
+          echo "✅ Logged in to Azure"
+          az account show
+
+      - name: Create Resource Group
+        run: |
+          az group create \
+            --name rg-intseneca-dev-eastus \
+            --location eastus \
+            --tags environment=dev application=interview-tracking managedBy=bicep-pipeline
+
+      - name: Validate Bicep Template
+        run: |
+          cd infrastructure/bicep
+          echo "🔍 Validating Bicep template..."
+          az bicep lint --file main.bicep --diagnostics-format short
+
+      - name: What-If Analysis
+        run: |
+          cd infrastructure/bicep
+          echo "📋 Running What-If analysis..."
+          az deployment group what-if \
+            --resource-group rg-intseneca-dev-eastus \
+            --template-file main.bicep \
+            --parameters parameters/dev.bicepparam \
+            --no-pretty-print
+
+      - name: Deploy Infrastructure
+        id: deploy
+        run: |
+          cd infrastructure/bicep
+          echo "🚀 Deploying infrastructure to dev..."
+
+          DEPLOYMENT_NAME="deploy-$(date +%Y%m%d-%H%M%S)"
+
+          az deployment group create \
+            --name "$DEPLOYMENT_NAME" \
+            --resource-group rg-intseneca-dev-eastus \
+            --template-file main.bicep \
+            --parameters parameters/dev.bicepparam \
+            --verbose
+
+          echo "deployment_name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get Deployment Outputs
+        id: outputs
+        run: |
+          cd infrastructure/bicep
+
+          echo "📊 Deployment Outputs:"
+          az deployment group show \
+            --resource-group rg-intseneca-dev-eastus \
+            --name ${{ steps.deploy.outputs.deployment_name }} \
+            --query properties.outputs \
+            --output table
+
+          # Extract outputs for use in subsequent jobs
+          FUNCTION_APP_NAME=$(az deployment group show \
+            --resource-group rg-intseneca-dev-eastus \
+            --name ${{ steps.deploy.outputs.deployment_name }} \
+            --query properties.outputs.functionAppName.value \
+            --output tsv)
+
+          STATIC_WEB_APP_NAME=$(az deployment group show \
+            --resource-group rg-intseneca-dev-eastus \
+            --name ${{ steps.deploy.outputs.deployment_name }} \
+            --query properties.outputs.staticWebAppName.value \
+            --output tsv)
+
+          echo "function_app_name=$FUNCTION_APP_NAME" >> $GITHUB_OUTPUT
+          echo "static_web_app_name=$STATIC_WEB_APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🎉 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment**: Development" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group**: rg-intseneca-dev-eastus" >> $GITHUB_STEP_SUMMARY
+          echo "**Function App**: ${{ steps.outputs.outputs.function_app_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Static Web App**: ${{ steps.outputs.outputs.static_web_app_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Deploy backend code to Function App" >> $GITHUB_STEP_SUMMARY
+          echo "2. Deploy frontend code to Static Web App" >> $GITHUB_STEP_SUMMARY
+          echo "3. Verify application is running" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [Azure Portal - Resource Group](https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-eastus/overview)" >> $GITHUB_STEP_SUMMARY

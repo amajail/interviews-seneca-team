@@ -1,0 +1,164 @@
+name: Validate Infrastructure
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'infrastructure/bicep/**'
+      - '.github/workflows/infra-*.yml'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+  pull-requests: write  # To comment on PR
+
+jobs:
+  validate-bicep:
+    name: Validate Bicep Templates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bicep
+        run: |
+          # Bicep is bundled with Azure CLI, just verify version
+          az bicep version
+
+      - name: Lint Bicep Files
+        id: lint
+        run: |
+          cd infrastructure/bicep
+          echo "🔍 Linting Bicep templates..."
+
+          # Lint main template
+          az bicep lint --file main.bicep --diagnostics-format short > lint-results.txt 2>&1 || true
+
+          # Lint all modules
+          for module in modules/*.bicep; do
+            echo "Linting $module..."
+            az bicep lint --file "$module" --diagnostics-format short >> lint-results.txt 2>&1 || true
+          done
+
+          cat lint-results.txt
+
+          # Check if there are any errors
+          if grep -q "Error" lint-results.txt; then
+            echo "has_errors=true" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "has_errors=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Bicep to ARM
+        run: |
+          cd infrastructure/bicep
+          echo "🔨 Building Bicep to ARM template..."
+          az bicep build --file main.bicep --outfile main.json
+          echo "✅ Build successful"
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Validate Against Azure (Dry-Run)
+        run: |
+          cd infrastructure/bicep
+          echo "🧪 Validating against Azure subscription..."
+
+          # Ensure resource group exists for validation
+          az group create \
+            --name rg-intseneca-dev-eastus \
+            --location eastus \
+            --tags environment=dev validation=true
+
+          # Validate deployment
+          az deployment group validate \
+            --resource-group rg-intseneca-dev-eastus \
+            --template-file main.bicep \
+            --parameters parameters/dev.bicepparam
+
+      - name: What-If Analysis
+        id: whatif
+        run: |
+          cd infrastructure/bicep
+          echo "📋 Running What-If analysis..."
+
+          az deployment group what-if \
+            --resource-group rg-intseneca-dev-eastus \
+            --template-file main.bicep \
+            --parameters parameters/dev.bicepparam \
+            --no-pretty-print > whatif-results.txt 2>&1 || true
+
+          cat whatif-results.txt
+
+      - name: Comment PR with Results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Read what-if results
+            let whatifResults = '';
+            try {
+              whatifResults = fs.readFileSync('infrastructure/bicep/whatif-results.txt', 'utf8');
+            } catch (e) {
+              whatifResults = 'What-if analysis not available';
+            }
+
+            // Read lint results
+            let lintResults = '';
+            try {
+              lintResults = fs.readFileSync('infrastructure/bicep/lint-results.txt', 'utf8');
+            } catch (e) {
+              lintResults = 'No linting issues found ✅';
+            }
+
+            const comment = `## 🔍 Infrastructure Validation Results
+
+            ### Bicep Linting
+            \`\`\`
+            ${lintResults}
+            \`\`\`
+
+            ### What-If Analysis (Dev Environment)
+            <details>
+            <summary>Click to expand What-If results</summary>
+
+            \`\`\`
+            ${whatifResults}
+            \`\`\`
+            </details>
+
+            ### Validation Status
+            - ✅ Bicep templates are valid
+            - ✅ Successfully built to ARM templates
+            - ✅ Azure deployment validation passed
+
+            **Ready to merge and deploy!** 🚀
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Validation Summary
+        run: |
+          echo "## ✅ Validation Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All Bicep templates are valid and ready for deployment!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Checks Performed" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Bicep linting" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build to ARM template" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Azure deployment validation" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ What-if analysis" >> $GITHUB_STEP_SUMMARY
