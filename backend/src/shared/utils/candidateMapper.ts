@@ -11,6 +11,8 @@ import type { Candidate } from '../../domain/entities/Candidate';
  */
 export interface FrontendCandidate {
   id: string;
+  eTag?: string;
+  timestamp?: string;
   fullName: string;
   email: string;
   phone: string;
@@ -71,6 +73,8 @@ function toISOStringSafe(date: Date | string | undefined | null): string {
 export function mapCandidateToFrontend(candidate: Candidate): FrontendCandidate {
   return {
     id: candidate.id || candidate.rowKey,
+    eTag: candidate.eTag,
+    timestamp: candidate.timestamp ? toISOStringSafe(candidate.timestamp) : undefined,
     fullName: candidate.name,
     email: candidate.email,
     phone: candidate.phone ?? '',

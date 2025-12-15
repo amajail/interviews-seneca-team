@@ -31,3 +31,10 @@ export class DatabaseError extends Error {
     this.name = 'DatabaseError';
   }
 }
+
+export class PreconditionFailedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PreconditionFailedError';
+  }
+}

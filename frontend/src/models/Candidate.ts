@@ -5,6 +5,8 @@
 
 export interface Candidate {
   id: string;
+  eTag?: string;
+  timestamp?: string;
   fullName: string;
   email: string;
   phone: string;
@@ -64,7 +66,7 @@ export interface CreateCandidateDto {
 }
 
 export interface UpdateCandidateDto extends Partial<CreateCandidateDto> {
-  id: string;
+  // id comes from URL parameter, not from DTO
 }
 
 export interface CandidateFilters {
