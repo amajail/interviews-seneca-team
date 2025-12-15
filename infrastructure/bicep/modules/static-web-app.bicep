@@ -42,6 +42,12 @@ resource staticWebApp 'Microsoft.Web/staticSites@2023-01-01' = {
     name: sku
     tier: sku
   }
+  // System-assigned Managed Identity
+  // Note: Not currently used by frontend (static files only)
+  // Added for future flexibility and security best practices
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     repositoryUrl: repositoryUrl
     branch: repositoryBranch
@@ -71,3 +77,6 @@ output url string = 'https://${staticWebApp.properties.defaultHostname}'
 
 @description('The deployment token (secret)')
 output deploymentToken string = staticWebApp.listSecrets().properties.apiKey
+
+@description('The principal ID of the Static Web App managed identity')
+output principalId string = staticWebApp.identity.principalId
