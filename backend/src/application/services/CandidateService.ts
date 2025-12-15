@@ -1,7 +1,10 @@
 import { ICandidateRepository } from '../../infrastructure/database/repositories/ICandidateRepository';
-import { Candidate, CreateCandidateDto } from '../../domain/entities/Candidate';
+import { Candidate, CreateCandidateDto, UpdateCandidateDto } from '../../domain/entities/Candidate';
 import { ValidationError, NotFoundError } from '../../shared/errors/CustomErrors';
-import { createCandidateSchema } from '../../shared/validation/candidateSchemas';
+import {
+  createCandidateSchema,
+  updateCandidateSchema,
+} from '../../shared/validation/candidateSchemas';
 import { PaginationOptions, PaginatedResult } from '../../domain/types/Pagination';
 
 export class CandidateService {
@@ -47,6 +50,33 @@ export class CandidateService {
     }
 
     return candidate;
+  }
+
+  async updateCandidate(id: string, updateData: unknown): Promise<Candidate> {
+    const validationResult = updateCandidateSchema.safeParse(updateData);
+
+    if (!validationResult.success) {
+      const firstError = validationResult.error.issues[0];
+      throw new ValidationError(firstError.message, firstError.path.join('.'));
+    }
+
+    const validatedData = validationResult.data;
+
+    const updateDto: UpdateCandidateDto = {
+      name: validatedData.name,
+      email: validatedData.email,
+      phone: validatedData.phone,
+      position: validatedData.position,
+      status: validatedData.status,
+      interviewStage: validatedData.interviewStage,
+      expectedSalary: validatedData.expectedSalary,
+      yearsOfExperience: validatedData.yearsOfExperience,
+      notes: validatedData.notes,
+    };
+
+    const updatedCandidate = await this.candidateRepository.update(id, updateDto);
+
+    return updatedCandidate;
   }
 
   async listCandidates(options?: PaginationOptions): Promise<PaginatedResult<Candidate>> {

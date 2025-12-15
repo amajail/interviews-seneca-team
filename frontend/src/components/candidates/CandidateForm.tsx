@@ -1,10 +1,10 @@
 /**
  * Candidate Form Component
- * Comprehensive form for adding new candidates
+ * Comprehensive form for adding and editing candidates
  * Follows SRP - responsible only for candidate form logic
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -13,15 +13,19 @@ import { FormInput, FormTextarea, FormSelect, FormDatePicker } from '@/component
 import { candidateFormSchema, type CandidateFormData } from '@/schemas/candidateFormSchema';
 import { candidateApi } from '@/services/api';
 import { useToast } from '@/hooks/useToast';
-import type { Candidate, CreateCandidateDto } from '@/models';
+import type { Candidate, CreateCandidateDto, UpdateCandidateDto } from '@/models';
 
 export interface CandidateFormProps {
+  mode?: 'create' | 'edit';
+  candidateId?: string;
   onSuccess?: (candidate: Candidate) => void;
   onCancel?: () => void;
-  initialData?: Partial<CreateCandidateDto>;
+  initialData?: Partial<Candidate>;
 }
 
 export const CandidateForm: React.FC<CandidateFormProps> = ({
+  mode = 'create',
+  candidateId,
   onSuccess,
   onCancel,
   initialData,
@@ -29,6 +33,8 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
   const navigate = useNavigate();
   const { showSuccess, showError } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingCandidate, setLoadingCandidate] = useState(mode === 'edit');
+  const [candidateETag, setCandidateETag] = useState<string | undefined>();
 
   const {
     register,
@@ -57,12 +63,55 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
     },
   });
 
+  // Fetch candidate data in edit mode
+  useEffect(() => {
+    if (mode === 'edit' && candidateId) {
+      const fetchCandidate = async () => {
+        try {
+          setLoadingCandidate(true);
+          const candidate = await candidateApi.getCandidateById(candidateId);
+
+          // Store eTag for optimistic concurrency
+          setCandidateETag(candidate.eTag);
+
+          // Populate form with candidate data
+          reset({
+            fullName: candidate.fullName,
+            email: candidate.email,
+            phone: candidate.phone,
+            positionAppliedFor: candidate.positionAppliedFor,
+            applicationDate: candidate.applicationDate.split('T')[0],
+            source: candidate.source,
+            priority: candidate.priority,
+            currentStatus: candidate.currentStatus,
+            interviewStage: candidate.interviewStage,
+            resumeUrl: candidate.resumeUrl || '',
+            technicalSkillsRating: candidate.technicalSkillsRating,
+            interviewerNames: candidate.interviewerNames?.join('\n') || '',
+            interviewNotes: candidate.interviewNotes || '',
+            nextFollowUpDate: candidate.nextFollowUpDate || '',
+            expectedSalary: candidate.expectedSalary,
+            yearsOfExperience: candidate.yearsOfExperience,
+          });
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : 'Failed to load candidate';
+          showError(errorMessage);
+        } finally {
+          setLoadingCandidate(false);
+        }
+      };
+
+      fetchCandidate();
+    }
+  }, [mode, candidateId, reset, showError]);
+
   const onSubmit = async (data: CandidateFormData) => {
     try {
       setIsSubmitting(true);
 
-      // Transform form data to CreateCandidateDto
-      const createDto: CreateCandidateDto = {
+      // Transform form data
+      const candidateData = {
         fullName: data.fullName,
         email: data.email,
         phone: data.phone || '',
@@ -83,10 +132,20 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
         yearsOfExperience: data.yearsOfExperience,
       };
 
-      const candidate = await candidateApi.createCandidate(createDto);
+      let candidate: Candidate;
 
-      showSuccess('Candidate added successfully!');
-      reset();
+      if (mode === 'edit' && candidateId) {
+        // Update existing candidate
+        const updateDto: UpdateCandidateDto = candidateData;
+        candidate = await candidateApi.updateCandidate(candidateId, updateDto, candidateETag);
+        showSuccess('Candidate updated successfully!');
+      } else {
+        // Create new candidate
+        const createDto: CreateCandidateDto = candidateData;
+        candidate = await candidateApi.createCandidate(createDto);
+        showSuccess('Candidate added successfully!');
+        reset();
+      }
 
       if (onSuccess) {
         onSuccess(candidate);
@@ -94,8 +153,23 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
         // Navigate to candidate detail page
         navigate(`/candidates/${candidate.id}`);
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to add candidate';
+    } catch (error: unknown) {
+      // Handle concurrency conflicts
+      if (error && typeof error === 'object' && 'code' in error) {
+        if (error.code === 'CONCURRENCY_CONFLICT') {
+          showError(
+            'This candidate was modified by someone else. Please refresh the page and try again.'
+          );
+          return;
+        }
+      }
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : mode === 'edit'
+            ? 'Failed to update candidate'
+            : 'Failed to add candidate';
       showError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -115,6 +189,24 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
       navigate('/candidates');
     }
   };
+
+  // Show loading state while fetching candidate in edit mode
+  if (loadingCandidate) {
+    return (
+      <div className="space-y-8">
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+            <div className="space-y-3">
+              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -340,7 +432,13 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
           Reset
         </Button>
         <Button type="submit" variant="primary" loading={isSubmitting} disabled={isSubmitting}>
-          {isSubmitting ? 'Adding...' : 'Add Candidate'}
+          {isSubmitting
+            ? mode === 'edit'
+              ? 'Saving...'
+              : 'Adding...'
+            : mode === 'edit'
+              ? 'Save Changes'
+              : 'Add Candidate'}
         </Button>
       </div>
     </form>

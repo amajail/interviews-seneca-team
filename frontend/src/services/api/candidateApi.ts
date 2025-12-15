@@ -91,8 +91,15 @@ export class CandidateApiService {
     return httpClient.post<Candidate>(this.basePath, backendDto);
   }
 
-  async updateCandidate(id: string, data: UpdateCandidateDto): Promise<Candidate> {
-    return httpClient.put<Candidate>(`${this.basePath}/${id}`, data);
+  async updateCandidate(
+    id: string,
+    data: UpdateCandidateDto,
+    eTag?: string
+  ): Promise<Candidate> {
+    const backendDto = this.mapToBackendDto(data);
+    const headers = eTag ? { 'If-Match': eTag } : {};
+
+    return httpClient.put<Candidate>(`${this.basePath}/${id}`, backendDto, { headers });
   }
 
   async deleteCandidate(id: string): Promise<void> {

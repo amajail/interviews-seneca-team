@@ -8,3 +8,4 @@ import './functions/health/healthCheck';
 import './functions/candidates/getCandidates';
 import './functions/candidates/getCandidateById';
 import './functions/candidates/createCandidate';
+import './functions/candidates/updateCandidate';

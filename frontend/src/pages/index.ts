@@ -7,3 +7,4 @@ export { Dashboard } from './Dashboard';
 export { CandidateList } from './CandidateList';
 export { CandidateDetail } from './CandidateDetail';
 export { AddCandidate } from './AddCandidate';
+export { EditCandidate } from './EditCandidate';
