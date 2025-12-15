@@ -76,6 +76,7 @@ output defaultHostname string = staticWebApp.properties.defaultHostname
 output url string = 'https://${staticWebApp.properties.defaultHostname}'
 
 @description('The deployment token (secret)')
+@secure()
 output deploymentToken string = staticWebApp.listSecrets().properties.apiKey
 
 @description('The principal ID of the Static Web App managed identity')

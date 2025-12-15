@@ -102,9 +102,11 @@ output storageAccountName string = storageAccount.name
 output tableEndpoint string = storageAccount.properties.primaryEndpoints.table
 
 @description('The connection string for the storage account')
-output connectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
+@secure()
+output connectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=${az.environment().suffixes.storage}'
 
 @description('The primary access key')
+@secure()
 output primaryKey string = storageAccount.listKeys().keys[0].value
 
 @description('The principal ID of the Storage Account managed identity')

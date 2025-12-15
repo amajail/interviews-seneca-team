@@ -87,10 +87,6 @@ module functionApp './modules/function-app.bicep' = {
     appInsightsConnectionString: appInsights.outputs.connectionString
     tags: tags
   }
-  dependsOn: [
-    storageAccount
-    appInsights
-  ]
 }
 
 // Module 4: Key Vault (for storing secrets)
@@ -106,9 +102,6 @@ module keyVault './modules/key-vault.bicep' = {
     enablePurgeProtection: keyVaultPurgeProtection
     tags: tags
   }
-  dependsOn: [
-    functionApp
-  ]
 }
 
 // Module 5: Static Web App (frontend)
@@ -125,26 +118,39 @@ module staticWebApp './modules/static-web-app.bicep' = {
   }
 }
 
+// Reference to Key Vault for adding secrets
+resource keyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+
 // Key Vault Secrets
 resource storageConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: '${keyVault.outputs.keyVaultName}/StorageConnectionString'
+  parent: keyVaultResource
+  name: 'StorageConnectionString'
   properties: {
     value: storageAccount.outputs.connectionString
   }
 }
 
 resource appInsightsKeySecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: '${keyVault.outputs.keyVaultName}/AppInsightsInstrumentationKey'
+  parent: keyVaultResource
+  name: 'AppInsightsInstrumentationKey'
   properties: {
     value: appInsights.outputs.instrumentationKey
   }
 }
 
 resource tableNameSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
-  name: '${keyVault.outputs.keyVaultName}/TableName'
+  parent: keyVaultResource
+  name: 'TableName'
   properties: {
     value: 'candidates'
   }
+}
+
+// Reference to Storage Account for RBAC assignment
+resource storageAccountResource 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: storageAccountName
 }
 
 // RBAC Role Assignment: Function App -> Storage Table Data Contributor
@@ -154,8 +160,8 @@ resource storageTableDataContributorRole 'Microsoft.Authorization/roleDefinition
 }
 
 resource functionAppStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: storageAccount
-  name: guid(storageAccount.outputs.storageAccountId, functionApp.outputs.principalId, storageTableDataContributorRole.id)
+  scope: storageAccountResource
+  name: guid(storageAccountResource.id, functionAppName, storageTableDataContributorRole.id)
   properties: {
     roleDefinitionId: storageTableDataContributorRole.id
     principalId: functionApp.outputs.principalId
