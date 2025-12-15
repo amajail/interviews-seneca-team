@@ -134,6 +134,58 @@ Each story follows the format:
 
 ---
 
+## INFRA-017: Implement Network Security Restrictions
+**Priority**: Medium | **Estimate**: 3
+
+**As a**: Security team
+**I want**: Network access restrictions on production resources
+**So that**: Infrastructure is protected from unauthorized access
+
+**Acceptance Criteria**:
+- [ ] Evaluate network security requirements for each environment
+- [ ] Configure IP allowlist for production storage accounts
+- [ ] Configure IP allowlist for production Key Vault
+- [ ] Implement private endpoints for production (optional, advanced)
+- [ ] Restrict Function App public access in production
+- [ ] Document allowed IP ranges and firewall rules
+- [ ] Add network security parameters to Bicep templates
+- [ ] Update prod.bicepparam with network restrictions
+- [ ] Test access from allowed and denied IPs
+- [ ] Update deployment documentation
+
+**Security Configuration**:
+- **Dev Environment**: Public access enabled (easier development)
+- **Staging Environment**: IP restrictions (office + CI/CD IPs)
+- **Production Environment**: Strict IP allowlist OR private endpoints
+
+**IP Allowlist Strategy**:
+- Office/VPN IP ranges
+- GitHub Actions IP ranges (for CI/CD)
+- Azure Services (via service tags)
+- Block all other traffic
+
+**Implementation Options**:
+1. **IP Firewall Rules** (simpler, lower cost)
+   - Configure `networkAcls.ipRules` in Bicep
+   - Allow specific IP ranges
+   - ~$0/month additional cost
+
+2. **Private Endpoints** (most secure, higher cost)
+   - Disable public network access
+   - Create private endpoints in VNet
+   - ~$7-15/month per endpoint additional cost
+
+**Affected Resources**:
+- Storage Account
+- Key Vault
+- Function App (optional)
+
+**Dependencies**:
+- INFRA-009 (Bicep modules must exist)
+- INFRA-010 (Dev environment deployed for testing)
+
+---
+
 # Backend Stories
 
 ## BACK-001: Create Candidate Entity and Repository
