@@ -34,7 +34,7 @@ describe('CandidateRepository', () => {
     it('should return all candidates', async () => {
       const mockEntities = [
         {
-          partitionKey: 'CANDIDATE#2025-01',
+          partitionKey: 'CANDIDATE_2025-01',
           rowKey: 'id-1',
           id: 'id-1',
           name: 'John Doe',
@@ -92,7 +92,7 @@ describe('CandidateRepository', () => {
   describe('findById', () => {
     it('should return candidate when found', async () => {
       const mockEntity = {
-        partitionKey: 'CANDIDATE#2025-01',
+        partitionKey: 'CANDIDATE_2025-01',
         rowKey: 'test-id',
         id: 'test-id',
         name: 'Jane Doe',
@@ -120,7 +120,7 @@ describe('CandidateRepository', () => {
       expect(result?.email).toBe('jane@example.com');
       expect(mockTableClient.listEntities).toHaveBeenCalledWith({
         queryOptions: {
-          filter: "rowKey eq 'test-id'",
+          filter: "RowKey eq 'test-id'",
         },
       });
     });
@@ -177,7 +177,7 @@ describe('CandidateRepository', () => {
       expect(result.status).toBe(CandidateStatus.NEW);
       expect(result.interviewStage).toBe(InterviewStage.NOT_STARTED);
       expect(result.id).toBeDefined();
-      expect(result.partitionKey).toMatch(/^CANDIDATE#\d{4}-\d{2}$/);
+      expect(result.partitionKey).toMatch(/^CANDIDATE_\d{4}-\d{2}$/);
       expect(result.rowKey).toBe(result.id);
       expect(mockTableClient.createEntity).toHaveBeenCalled();
     });
@@ -206,7 +206,7 @@ describe('CandidateRepository', () => {
 
     it('should throw ConflictError when email already exists', async () => {
       const existingCandidate = {
-        partitionKey: 'CANDIDATE#2025-01',
+        partitionKey: 'CANDIDATE_2025-01',
         rowKey: 'existing-id',
         email: validCandidateDto.email,
       };
@@ -241,7 +241,7 @@ describe('CandidateRepository', () => {
 
   describe('update', () => {
     const existingCandidate = {
-      partitionKey: 'CANDIDATE#2025-01',
+      partitionKey: 'CANDIDATE_2025-01',
       rowKey: 'update-id',
       id: 'update-id',
       name: 'Old Name',
@@ -337,7 +337,7 @@ describe('CandidateRepository', () => {
 
   describe('delete', () => {
     const existingCandidate = {
-      partitionKey: 'CANDIDATE#2025-01',
+      partitionKey: 'CANDIDATE_2025-01',
       rowKey: 'delete-id',
       id: 'delete-id',
       name: 'To Delete',

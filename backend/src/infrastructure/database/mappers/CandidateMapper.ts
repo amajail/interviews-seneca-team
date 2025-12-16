@@ -3,27 +3,55 @@ import { Candidate, CandidateStatus, InterviewStage } from '../../../domain/enti
 
 /**
  * Maps Candidate domain entity to Azure Table Storage entity
+ * Azure Table Storage SDK requires Date objects to be valid Date instances
  */
 export function toTableEntity(candidate: Candidate): TableEntity {
-  return {
+  // Azure Table Storage uses partitionKey and rowKey as identifiers
+  // We don't need to store id separately since rowKey is already the unique identifier
+  // Exclude empty strings as Azure Table Storage may reject them
+
+  // Ensure required date fields are valid Date instances
+  const ensureDate = (date: Date | string): Date => {
+    if (date instanceof Date) return date;
+    return new Date(date);
+  };
+
+  const entity: Record<string, unknown> = {
     partitionKey: candidate.partitionKey,
     rowKey: candidate.rowKey,
-    id: candidate.id,
     name: candidate.name,
     email: candidate.email,
-    phone: candidate.phone ?? '',
     position: candidate.position,
     status: candidate.status,
     interviewStage: candidate.interviewStage,
-    applicationDate: candidate.applicationDate,
-    expectedSalary: candidate.expectedSalary ?? 0,
-    yearsOfExperience: candidate.yearsOfExperience ?? 0,
-    notes: candidate.notes ?? '',
-    createdAt: candidate.createdAt,
-    updatedAt: candidate.updatedAt,
-    createdBy: candidate.createdBy ?? '',
-    updatedBy: candidate.updatedBy ?? '',
+    applicationDate: ensureDate(candidate.applicationDate),
+    createdAt: ensureDate(candidate.createdAt),
+    updatedAt: ensureDate(candidate.updatedAt),
   };
+
+  // Only include optional string fields if they have non-empty values
+  if (candidate.phone && candidate.phone.trim() !== '') {
+    entity.phone = candidate.phone;
+  }
+  if (candidate.notes && candidate.notes.trim() !== '') {
+    entity.notes = candidate.notes;
+  }
+  if (candidate.createdBy && candidate.createdBy.trim() !== '') {
+    entity.createdBy = candidate.createdBy;
+  }
+  if (candidate.updatedBy && candidate.updatedBy.trim() !== '') {
+    entity.updatedBy = candidate.updatedBy;
+  }
+
+  // Include numeric fields (0 is a valid value)
+  if (candidate.expectedSalary != null) {
+    entity.expectedSalary = candidate.expectedSalary;
+  }
+  if (candidate.yearsOfExperience != null) {
+    entity.yearsOfExperience = candidate.yearsOfExperience;
+  }
+
+  return entity as TableEntity;
 }
 
 /**
@@ -31,7 +59,7 @@ export function toTableEntity(candidate: Candidate): TableEntity {
  */
 export function fromTableEntity(entity: TableEntityResult<Record<string, unknown>>): Candidate {
   return {
-    id: entity.id as string,
+    id: (entity.id ?? entity.rowKey) as string,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     partitionKey: entity.partitionKey!,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
