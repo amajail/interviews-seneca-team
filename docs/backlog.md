@@ -403,6 +403,33 @@ Each story follows the format:
 
 # Frontend Stories
 
+## MVP Progress Summary
+
+**✅ Completed (9 stories)**:
+- FRONT-001: Application Layout
+- FRONT-002: Candidate List Page
+- FRONT-003: Candidate Detail Page
+- FRONT-004: Add Candidate Form
+- FRONT-005: Edit Candidate Form
+- FRONT-011: API Service Layer
+- FRONT-012: Form Validation
+- FRONT-013: Loading and Error States
+- FRONT-015: Delete Confirmation Dialog
+
+**🚫 Excluded from MVP (7 stories)**:
+- FRONT-006: Search and Filter UI → Phase 2
+- FRONT-007: Status Update Workflow → Phase 2
+- FRONT-008: Dashboard with Metrics → Phase 3
+- FRONT-009: Export to Excel → Phase 2
+- FRONT-010: Import from Excel → Phase 3
+- FRONT-014: Responsive Design → Phase 2
+- FRONT-016: Table Sorting → Phase 2
+
+**📋 MVP Complete!**
+All core CRUD features implemented and working.
+
+---
+
 ## FRONT-001: Create Application Layout ✅
 **Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
@@ -479,28 +506,28 @@ Each story follows the format:
 
 ---
 
-## FRONT-005: Create Edit Candidate Form
-**Priority**: High | **Estimate**: 5
+## FRONT-005: Create Edit Candidate Form ✅
+**Priority**: High | **Estimate**: 5 | **Status**: COMPLETED
 
 **As a**: Recruiter
 **I want**: A form to edit existing candidate information
 **So that**: I can update candidate details
 
 **Acceptance Criteria**:
-- [ ] Pre-populated form with current data
-- [ ] All fields editable
-- [ ] Client-side validation
-- [ ] Save button
-- [ ] Cancel button
-- [ ] Loading state
-- [ ] Success message
-- [ ] Optimistic concurrency handling
+- [x] Pre-populated form with current data
+- [x] All fields editable
+- [x] Client-side validation
+- [x] Save button
+- [x] Cancel button
+- [x] Loading state
+- [x] Success message
+- [x] Optimistic concurrency handling
 - [ ] Component tests
 
 ---
 
-## FRONT-006: Implement Search and Filter UI
-**Priority**: High | **Estimate**: 8
+## FRONT-006: Implement Search and Filter UI 🚫
+**Priority**: ~~High~~ POST-MVP | **Estimate**: 8 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Recruiter
 **I want**: Search and filter controls on the candidate list
@@ -517,10 +544,12 @@ Each story follows the format:
 - [ ] Real-time search (debounced)
 - [ ] Component tests
 
+**Note**: Excluded from MVP per product decision. Will be implemented in Phase 2.
+
 ---
 
-## FRONT-007: Implement Status Update Workflow
-**Priority**: Medium | **Estimate**: 5
+## FRONT-007: Implement Status Update Workflow 🚫
+**Priority**: ~~Medium~~ POST-MVP | **Estimate**: 5 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Recruiter
 **I want**: Quick actions to update candidate status
@@ -534,10 +563,12 @@ Each story follows the format:
 - [ ] Success/error feedback
 - [ ] Component tests
 
+**Note**: Excluded from MVP per product decision. Users can update status via Edit form.
+
 ---
 
-## FRONT-008: Create Dashboard/Home Page
-**Priority**: Medium | **Estimate**: 8
+## FRONT-008: Create Dashboard/Home Page 🚫
+**Priority**: ~~Medium~~ POST-MVP | **Estimate**: 8 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Hiring manager
 **I want**: A dashboard with key metrics
@@ -552,10 +583,12 @@ Each story follows the format:
 - [ ] Responsive design
 - [ ] Component tests
 
+**Note**: Excluded from MVP per product decision. Dashboard shows placeholder content only.
+
 ---
 
-## FRONT-009: Implement Export to Excel Feature
-**Priority**: Medium | **Estimate**: 3
+## FRONT-009: Implement Export to Excel Feature 🚫
+**Priority**: ~~Medium~~ POST-MVP | **Estimate**: 3 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Recruiter
 **I want**: Button to export candidates to Excel
@@ -570,10 +603,12 @@ Each story follows the format:
 - [ ] Error handling
 - [ ] Component test
 
+**Note**: Excluded from MVP per product decision. Will be implemented in Phase 2.
+
 ---
 
-## FRONT-010: Implement Import from Excel Feature
-**Priority**: Low | **Estimate**: 5
+## FRONT-010: Implement Import from Excel Feature 🚫
+**Priority**: ~~Low~~ POST-MVP | **Estimate**: 5 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Recruiter
 **I want**: Upload Excel file to import candidates
@@ -588,64 +623,66 @@ Each story follows the format:
 - [ ] Download error report
 - [ ] Component tests
 
+**Note**: Excluded from MVP per product decision. Will be implemented in Phase 3.
+
 ---
 
-## FRONT-011: Create API Service Layer
-**Priority**: High | **Estimate**: 5
+## FRONT-011: Create API Service Layer ✅
+**Priority**: High | **Estimate**: 5 | **Status**: COMPLETED
 
 **As a**: Frontend developer
 **I want**: Abstracted API service
 **So that**: API calls are centralized and reusable
 
 **Acceptance Criteria**:
-- [ ] Axios instance configured
-- [ ] Base URL from environment
-- [ ] Request/response interceptors
-- [ ] Error handling
-- [ ] Type-safe API methods
-- [ ] Follows repository pattern
+- [x] Axios instance configured
+- [x] Base URL from environment
+- [x] Request/response interceptors
+- [x] Error handling
+- [x] Type-safe API methods
+- [x] Follows repository pattern
 - [ ] Unit tests with mocks
 
 ---
 
-## FRONT-012: Implement Form Validation
-**Priority**: High | **Estimate**: 3
+## FRONT-012: Implement Form Validation ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: Frontend developer
 **I want**: Reusable form validation
 **So that**: Forms have consistent validation
 
 **Acceptance Criteria**:
-- [ ] React Hook Form integrated
-- [ ] Zod validation schemas
-- [ ] Reusable form components
-- [ ] Error message display
-- [ ] Email validation
-- [ ] Phone validation
-- [ ] Required field validation
+- [x] React Hook Form integrated
+- [x] Zod validation schemas
+- [x] Reusable form components
+- [x] Error message display
+- [x] Email validation
+- [x] Phone validation
+- [x] Required field validation
 - [ ] Component tests
 
 ---
 
-## FRONT-013: Implement Loading and Error States
-**Priority**: High | **Estimate**: 3
+## FRONT-013: Implement Loading and Error States ✅
+**Priority**: High | **Estimate**: 3 | **Status**: COMPLETED
 
 **As a**: User
 **I want**: Visual feedback during operations
 **So that**: I know when the app is working
 
 **Acceptance Criteria**:
-- [ ] Loading spinner component
-- [ ] Skeleton loaders for tables
-- [ ] Error boundary component
-- [ ] Toast notifications for success/error
-- [ ] Retry button on errors
+- [x] Loading spinner component
+- [x] Skeleton loaders for tables
+- [x] Error boundary component
+- [x] Toast notifications for success/error
+- [x] Retry button on errors
 - [ ] Component tests
 
 ---
 
-## FRONT-014: Implement Responsive Design
-**Priority**: Medium | **Estimate**: 5
+## FRONT-014: Implement Responsive Design 🚫
+**Priority**: ~~Medium~~ POST-MVP | **Estimate**: 5 | **Status**: EXCLUDED FROM MVP
 
 **As a**: User
 **I want**: Application to work on mobile devices
@@ -659,26 +696,28 @@ Each story follows the format:
 - [ ] No horizontal scrolling
 - [ ] Component tests with different viewports
 
+**Note**: Excluded from MVP per product decision. MVP will be desktop-only. Mobile support in Phase 2.
+
 ---
 
-## FRONT-015: Create Delete Confirmation Dialog
-**Priority**: Medium | **Estimate**: 2
+## FRONT-015: Create Delete Confirmation Dialog ✅
+**Priority**: Medium | **Estimate**: 2 | **Status**: COMPLETED
 
 **As a**: Recruiter
 **I want**: Confirmation before deleting candidates
 **So that**: I don't accidentally remove data
 
 **Acceptance Criteria**:
-- [ ] Modal dialog component
-- [ ] Shows candidate name
-- [ ] Confirm and cancel buttons
-- [ ] Prevents accidental deletion
+- [x] Modal dialog component (using browser confirm)
+- [x] Shows candidate name
+- [x] Confirm and cancel buttons
+- [x] Prevents accidental deletion
 - [ ] Component test
 
 ---
 
-## FRONT-016: Implement Sorting on Table Columns
-**Priority**: Medium | **Estimate**: 3
+## FRONT-016: Implement Sorting on Table Columns 🚫
+**Priority**: ~~Medium~~ POST-MVP | **Estimate**: 3 | **Status**: EXCLUDED FROM MVP
 
 **As a**: Recruiter
 **I want**: Sortable table columns
@@ -690,6 +729,8 @@ Each story follows the format:
 - [ ] Visual indicator for sort direction
 - [ ] Persists in URL
 - [ ] Component tests
+
+**Note**: Excluded from MVP per product decision. Will be implemented in Phase 2.
 
 ---
 
@@ -793,21 +834,40 @@ Each story follows the format:
 
 # Story Prioritization
 
-## Phase 1 - MVP (Must Have)
+## Phase 1 - MVP (Must Have) ✅
 Infrastructure foundation and core CRUD operations:
-- INFRA-001, INFRA-002, INFRA-003, INFRA-004, INFRA-006
-- BACK-001, BACK-002, BACK-003, BACK-004, BACK-005, BACK-010, BACK-011, BACK-012
-- FRONT-001, FRONT-002, FRONT-003, FRONT-004, FRONT-005, FRONT-011, FRONT-012, FRONT-013
+- ✅ INFRA-001, INFRA-002, INFRA-003, INFRA-004 (COMPLETED)
+- 🔄 INFRA-006 (In Progress)
+- 🔄 BACK-001, BACK-002, BACK-003, BACK-004, BACK-005, BACK-010, BACK-011, BACK-012
+- ✅ FRONT-001, FRONT-002, FRONT-003, FRONT-004, FRONT-005 (COMPLETED)
+- ✅ FRONT-011, FRONT-012, FRONT-013, FRONT-015 (COMPLETED)
+
+**MVP Status**: Core CRUD features COMPLETED. Backend APIs and testing in progress.
+
+**Excluded from MVP (per product decision)**:
+- 🚫 FRONT-006: Search and Filter UI → Phase 2
+- 🚫 FRONT-007: Status Update Workflow → Phase 2
+- 🚫 FRONT-008: Dashboard with Metrics → Phase 3
+- 🚫 FRONT-009: Export to Excel → Phase 2
+- 🚫 FRONT-010: Import from Excel → Phase 3
+- 🚫 FRONT-014: Responsive Design → Phase 2
+- 🚫 FRONT-016: Table Sorting → Phase 2
 
 ## Phase 2 - Enhanced Features (Should Have)
-Search, filtering, and status management:
-- BACK-007, BACK-008
-- FRONT-006, FRONT-007, FRONT-009, FRONT-015, FRONT-016
+Search, filtering, sorting, and UI improvements:
+- BACK-007: Search/Filter Candidates API
+- BACK-008: Export to Excel API
+- FRONT-006: Search and Filter UI (moved from MVP)
+- FRONT-007: Status Update Workflow (moved from MVP)
+- FRONT-009: Export to Excel Feature (moved from MVP)
+- FRONT-014: Responsive Design (moved from MVP)
+- FRONT-016: Table Sorting (moved from MVP)
 
 ## Phase 3 - Analytics & Migration (Could Have)
-Dashboard and data migration:
-- BACK-009
-- FRONT-008, FRONT-010
+Dashboard, data migration, and bulk operations:
+- BACK-009: Import from Excel API
+- FRONT-008: Dashboard/Home Page (moved from MVP)
+- FRONT-010: Import from Excel Feature (moved from MVP)
 
 ## Phase 4 - Production Readiness (Must Have for Production)
 CI/CD, monitoring, security:
@@ -851,3 +911,4 @@ A user story is considered "Done" when:
 # Revision History
 
 - **v1.0** - 2025-01-13 - Initial backlog created
+- **v1.1** - 2025-12-16 - Updated frontend stories status; Excluded FRONT-006 through FRONT-010, FRONT-014, and FRONT-016 from MVP per product decision
