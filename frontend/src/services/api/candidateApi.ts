@@ -22,6 +22,32 @@ export class CandidateApiService {
   private readonly basePath = '/candidates';
 
   /**
+   * Converts a date string to ISO datetime format
+   * Handles both date-only strings (YYYY-MM-DD) and full ISO datetime strings
+   */
+  private convertToISODatetime(dateString: string | undefined): string | undefined {
+    if (!dateString) return undefined;
+    
+    // If it's already a full ISO datetime string, return as is
+    if (dateString.includes('T') || dateString.includes('Z')) {
+      return dateString;
+    }
+    
+    // If it's just a date (YYYY-MM-DD), convert to ISO datetime at midnight UTC
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return new Date(`${dateString}T00:00:00.000Z`).toISOString();
+    }
+    
+    // Try to parse and convert to ISO format
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return date.toISOString();
+    }
+    
+    return dateString;
+  }
+
+  /**
    * Maps frontend DTO to backend-compatible format
    * Transforms field names to match backend schema
    * Accepts both CreateCandidateDto and UpdateCandidateDto (partial)
@@ -55,7 +81,7 @@ export class CandidateApiService {
       position: frontendDto.positionAppliedFor,
       status: frontendDto.currentStatus ? statusMap[frontendDto.currentStatus] : undefined,
       interviewStage: frontendDto.interviewStage ? stageMap[frontendDto.interviewStage] : undefined,
-      applicationDate: frontendDto.applicationDate,
+      applicationDate: this.convertToISODatetime(frontendDto.applicationDate),
       expectedSalary: frontendDto.expectedSalary,
       yearsOfExperience: frontendDto.yearsOfExperience,
       notes: frontendDto.interviewNotes,

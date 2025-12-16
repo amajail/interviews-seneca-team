@@ -5,7 +5,7 @@ import { Candidate, CandidateStatus, InterviewStage } from '../../../domain/enti
 describe('CandidateMapper', () => {
   const mockCandidate: Candidate = {
     id: 'test-id-123',
-    partitionKey: 'CANDIDATE#2025-01',
+    partitionKey: 'CANDIDATE_2025-01',
     rowKey: 'test-id-123',
     name: 'John Doe',
     email: 'john@example.com',
@@ -29,7 +29,8 @@ describe('CandidateMapper', () => {
 
       expect(result.partitionKey).toBe(mockCandidate.partitionKey);
       expect(result.rowKey).toBe(mockCandidate.rowKey);
-      expect(result.id).toBe(mockCandidate.id);
+      // id field should not be included (it's redundant with rowKey)
+      expect(result.id).toBeUndefined();
       expect(result.name).toBe(mockCandidate.name);
       expect(result.email).toBe(mockCandidate.email);
       expect(result.phone).toBe(mockCandidate.phone);
@@ -46,10 +47,10 @@ describe('CandidateMapper', () => {
       expect(result.updatedBy).toBe(mockCandidate.updatedBy);
     });
 
-    it('should handle optional fields with empty strings when undefined', () => {
+    it('should not include optional fields when undefined', () => {
       const candidateWithoutOptionals: Candidate = {
         id: 'test-id',
-        partitionKey: 'CANDIDATE#2025-01',
+        partitionKey: 'CANDIDATE_2025-01',
         rowKey: 'test-id',
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -63,18 +64,19 @@ describe('CandidateMapper', () => {
 
       const result = toTableEntity(candidateWithoutOptionals);
 
-      expect(result.phone).toBe('');
-      expect(result.expectedSalary).toBe(0);
-      expect(result.yearsOfExperience).toBe(0);
-      expect(result.notes).toBe('');
-      expect(result.createdBy).toBe('');
-      expect(result.updatedBy).toBe('');
+      // Optional fields should not be present when undefined
+      expect(result.phone).toBeUndefined();
+      expect(result.expectedSalary).toBeUndefined();
+      expect(result.yearsOfExperience).toBeUndefined();
+      expect(result.notes).toBeUndefined();
+      expect(result.createdBy).toBeUndefined();
+      expect(result.updatedBy).toBeUndefined();
     });
   });
 
   describe('fromTableEntity', () => {
     const mockTableEntity: TableEntityResult<Record<string, unknown>> = {
-      partitionKey: 'CANDIDATE#2025-01',
+      partitionKey: 'CANDIDATE_2025-01',
       rowKey: 'test-id-456',
       timestamp: '2025-01-20T10:30:00.0000000Z',
       etag: 'W/"datetime\'2025-01-20T10%3A30%3A00.0000000Z\'"',
@@ -129,7 +131,7 @@ describe('CandidateMapper', () => {
 
     it('should handle empty optional fields as undefined', () => {
       const minimalEntity: TableEntityResult<Record<string, unknown>> = {
-        partitionKey: 'CANDIDATE#2025-01',
+        partitionKey: 'CANDIDATE_2025-01',
         rowKey: 'minimal-id',
         etag: 'test-etag',
         id: 'minimal-id',
@@ -161,7 +163,7 @@ describe('CandidateMapper', () => {
 
     it('should handle entities without optional fields', () => {
       const entityWithoutOptionals: TableEntityResult<Record<string, unknown>> = {
-        partitionKey: 'CANDIDATE#2025-01',
+        partitionKey: 'CANDIDATE_2025-01',
         rowKey: 'test-id',
         etag: 'test-etag',
         id: 'test-id',

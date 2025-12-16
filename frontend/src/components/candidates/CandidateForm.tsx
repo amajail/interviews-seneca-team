@@ -338,35 +338,68 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
           Additional Details
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormInput
-            label="Expected Salary"
-            name="expectedSalary"
-            type="number"
-            register={register}
-            error={errors.expectedSalary?.message}
-            placeholder="70000"
-            disabled={isSubmitting}
-          />
-          <FormInput
-            label="Years of Experience"
-            name="yearsOfExperience"
-            type="number"
-            register={register}
-            error={errors.yearsOfExperience?.message}
-            placeholder="5"
-            disabled={isSubmitting}
-          />
-          <FormInput
-            label="Technical Skills Rating (1-5)"
-            name="technicalSkillsRating"
-            type="number"
-            register={register}
-            error={errors.technicalSkillsRating?.message}
-            placeholder="4"
-            min={1}
-            max={5}
-            disabled={isSubmitting}
-          />
+          <div className="w-full">
+            <label htmlFor="expectedSalary" className="block text-sm font-medium text-gray-700 mb-1">
+              Expected Salary
+            </label>
+            <input
+              id="expectedSalary"
+              type="number"
+              placeholder="70000"
+              className={`
+                w-full px-3 py-2 border rounded-md shadow-sm
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                ${errors.expectedSalary ? 'border-red-500' : 'border-gray-300'}
+              `}
+              disabled={isSubmitting}
+              {...register('expectedSalary', { valueAsNumber: true })}
+            />
+            {errors.expectedSalary?.message && (
+              <p className="mt-1 text-sm text-red-600">{errors.expectedSalary.message}</p>
+            )}
+          </div>
+          <div className="w-full">
+            <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 mb-1">
+              Years of Experience
+            </label>
+            <input
+              id="yearsOfExperience"
+              type="number"
+              placeholder="5"
+              className={`
+                w-full px-3 py-2 border rounded-md shadow-sm
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                ${errors.yearsOfExperience ? 'border-red-500' : 'border-gray-300'}
+              `}
+              disabled={isSubmitting}
+              {...register('yearsOfExperience', { valueAsNumber: true })}
+            />
+            {errors.yearsOfExperience?.message && (
+              <p className="mt-1 text-sm text-red-600">{errors.yearsOfExperience.message}</p>
+            )}
+          </div>
+          <div className="w-full">
+            <label htmlFor="technicalSkillsRating" className="block text-sm font-medium text-gray-700 mb-1">
+              Technical Skills Rating (1-5)
+            </label>
+            <input
+              id="technicalSkillsRating"
+              type="number"
+              placeholder="4"
+              min={1}
+              max={5}
+              className={`
+                w-full px-3 py-2 border rounded-md shadow-sm
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                ${errors.technicalSkillsRating ? 'border-red-500' : 'border-gray-300'}
+              `}
+              disabled={isSubmitting}
+              {...register('technicalSkillsRating', { valueAsNumber: true })}
+            />
+            {errors.technicalSkillsRating?.message && (
+              <p className="mt-1 text-sm text-red-600">{errors.technicalSkillsRating.message}</p>
+            )}
+          </div>
         </div>
       </div>
 

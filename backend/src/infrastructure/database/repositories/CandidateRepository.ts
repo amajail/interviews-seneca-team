@@ -49,9 +49,10 @@ export class CandidateRepository implements ICandidateRepository {
   async findById(id: string): Promise<Candidate | null> {
     try {
       // For findById, we need to search across all partitions since we don't know the partition key
+      // Note: Azure Table Storage system properties (RowKey, PartitionKey) are case-sensitive
       const entities = this.tableClient.listEntities({
         queryOptions: {
-          filter: `rowKey eq '${id}'`,
+          filter: `RowKey eq '${id}'`,
         },
       });
 
@@ -91,10 +92,11 @@ export class CandidateRepository implements ICandidateRepository {
       const id = crypto.randomUUID();
       const now = new Date();
 
-      // Partition key strategy: CANDIDATE#{year-month}
+      // Partition key strategy: CANDIDATE_{year-month}
+      // Note: Azure Table Storage doesn't allow # / \ ? characters in keys
       const year = String(now.getFullYear());
       const month = String(now.getMonth() + 1).padStart(2, '0');
-      const partitionKey = `CANDIDATE#${year}-${month}`;
+      const partitionKey = `CANDIDATE_${year}-${month}`;
       const rowKey = id;
 
       const candidate: Candidate = {
