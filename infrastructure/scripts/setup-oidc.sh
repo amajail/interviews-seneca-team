@@ -103,6 +103,45 @@ az ad app federated-credential create \
   }" --output none
 
 echo "  ✓ Tag credential configured"
+
+# Development environment
+az ad app federated-credential create \
+  --id $APP_ID \
+  --parameters "{
+    \"name\": \"github-oidc-env-development\",
+    \"issuer\": \"https://token.actions.githubusercontent.com\",
+    \"subject\": \"repo:${REPO_NAME}:environment:development\",
+    \"description\": \"GitHub Actions OIDC for development environment\",
+    \"audiences\": [\"api://AzureADTokenExchange\"]
+  }" --output none
+
+echo "  ✓ Development environment credential configured"
+
+# Staging environment
+az ad app federated-credential create \
+  --id $APP_ID \
+  --parameters "{
+    \"name\": \"github-oidc-env-staging\",
+    \"issuer\": \"https://token.actions.githubusercontent.com\",
+    \"subject\": \"repo:${REPO_NAME}:environment:staging\",
+    \"description\": \"GitHub Actions OIDC for staging environment\",
+    \"audiences\": [\"api://AzureADTokenExchange\"]
+  }" --output none
+
+echo "  ✓ Staging environment credential configured"
+
+# Production environment
+az ad app federated-credential create \
+  --id $APP_ID \
+  --parameters "{
+    \"name\": \"github-oidc-env-production\",
+    \"issuer\": \"https://token.actions.githubusercontent.com\",
+    \"subject\": \"repo:${REPO_NAME}:environment:production\",
+    \"description\": \"GitHub Actions OIDC for production environment\",
+    \"audiences\": [\"api://AzureADTokenExchange\"]
+  }" --output none
+
+echo "  ✓ Production environment credential configured"
 echo "✅ All federated credentials configured"
 
 # Step 5: Summary
