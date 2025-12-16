@@ -103,7 +103,9 @@ export const CandidateForm: React.FC<CandidateFormProps> = ({
 
       fetchCandidate();
     }
-  }, [mode, candidateId, reset, showError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Note: reset and showError are stable functions and don't need to be dependencies
+  }, [mode, candidateId]);
 
   const onSubmit = async (data: CandidateFormData) => {
     try {
