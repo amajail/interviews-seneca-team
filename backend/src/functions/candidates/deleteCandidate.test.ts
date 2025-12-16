@@ -1,5 +1,6 @@
 import { HttpRequest, InvocationContext } from '@azure/functions';
 import { deleteCandidate } from './deleteCandidate';
+import { createMockContext, createMockAsyncIterator, getMockTableClient } from './testHelpers';
 
 // Mock dependencies
 jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
@@ -14,12 +15,8 @@ describe('deleteCandidate Function', () => {
   let mockTableClient: any;
 
   beforeEach(() => {
-    mockContext = {
-      log: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
+    mockContext = createMockContext();
+    mockTableClient = getMockTableClient();
     jest.clearAllMocks();
   });
 
@@ -44,12 +41,7 @@ describe('deleteCandidate Function', () => {
       };
 
       // Mock findById
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
 
       // Mock delete
       mockTableClient.deleteEntity.mockResolvedValue({});
@@ -73,12 +65,7 @@ describe('deleteCandidate Function', () => {
         email: 'jane@example.com',
       };
 
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
       mockTableClient.deleteEntity.mockResolvedValue({});
 
       const request = createMockRequest(candidateId);
@@ -120,12 +107,7 @@ describe('deleteCandidate Function', () => {
       const candidateId = 'non-existent-id';
 
       // Mock findById returns no results
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          // No results
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
 
       const request = createMockRequest(candidateId);
       const response = await deleteCandidate(request, mockContext);
@@ -139,12 +121,7 @@ describe('deleteCandidate Function', () => {
     it('should return 404 with candidate ID in error message', async () => {
       const candidateId = 'missing-candidate-789';
 
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          // No results
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
 
       const request = createMockRequest(candidateId);
       const response = await deleteCandidate(request, mockContext);
@@ -165,12 +142,7 @@ describe('deleteCandidate Function', () => {
         email: 'john@example.com',
       };
 
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
       mockTableClient.deleteEntity.mockRejectedValue(new Error('Database error'));
 
       const request = createMockRequest(candidateId);

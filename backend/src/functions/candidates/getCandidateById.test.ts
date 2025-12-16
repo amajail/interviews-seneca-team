@@ -1,6 +1,7 @@
 import { HttpRequest, InvocationContext } from '@azure/functions';
 import { getCandidateById } from './getCandidateById';
 import { CandidateStatus, InterviewStage } from '../../domain/entities/Candidate';
+import { createMockContext, createMockAsyncIterator, getMockTableClient } from './testHelpers';
 
 // Mock dependencies
 jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
@@ -17,12 +18,8 @@ describe('getCandidateById Function', () => {
   let mockTableClient: any;
 
   beforeEach(() => {
-    mockContext = {
-      log: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
+    mockContext = createMockContext();
+    mockTableClient = getMockTableClient();
     jest.clearAllMocks();
   });
 
@@ -48,13 +45,7 @@ describe('getCandidateById Function', () => {
         interviewStage: InterviewStage.NOT_STARTED,
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          yield mockCandidate;
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([mockCandidate]));
 
       const request = createMockRequest(candidateId);
       const response = await getCandidateById(request, mockContext);
@@ -84,13 +75,7 @@ describe('getCandidateById Function', () => {
         notes: 'Excellent candidate',
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          yield mockCandidate;
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([mockCandidate]));
 
       const request = createMockRequest(candidateId);
       const response = await getCandidateById(request, mockContext);
@@ -106,13 +91,7 @@ describe('getCandidateById Function', () => {
     it('should return 404 when candidate does not exist', async () => {
       const candidateId = 'non-existent-id';
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          // Empty iterator - no candidate found
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
 
       const request = createMockRequest(candidateId);
       const response = await getCandidateById(request, mockContext);
@@ -166,15 +145,14 @@ describe('getCandidateById Function', () => {
     it('should return 500 for unexpected errors', async () => {
       const candidateId = 'test-id';
 
-      // Mock an unexpected error
-      const mockAsyncIterator = {
+      // Mock an unexpected error by throwing in the async iterator
+      const throwingIterator = {
         // eslint-disable-next-line require-yield
         async *[Symbol.asyncIterator]() {
           throw new Error('Unexpected error');
         },
       };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(throwingIterator);
 
       const request = createMockRequest(candidateId);
       const response = await getCandidateById(request, mockContext);

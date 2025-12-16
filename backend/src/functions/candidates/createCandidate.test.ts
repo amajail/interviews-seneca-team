@@ -1,6 +1,7 @@
 import { HttpRequest, InvocationContext } from '@azure/functions';
 import { createCandidate } from './createCandidate';
 import { CandidateStatus, InterviewStage } from '../../domain/entities/Candidate';
+import { createMockContext, createMockAsyncIterator, getMockTableClient } from './testHelpers';
 
 // Mock dependencies
 jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
@@ -17,12 +18,8 @@ describe('createCandidate Function', () => {
   let mockTableClient: any;
 
   beforeEach(() => {
-    mockContext = {
-      log: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
+    mockContext = createMockContext();
+    mockTableClient = getMockTableClient();
     jest.clearAllMocks();
   });
 
@@ -46,13 +43,7 @@ describe('createCandidate Function', () => {
         notes: 'Excellent candidate',
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          // Empty iterator - no duplicate email
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
       mockTableClient.createEntity.mockResolvedValue({});
 
       const request = createMockRequest(requestBody);
@@ -73,13 +64,7 @@ describe('createCandidate Function', () => {
         position: 'Designer',
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          // Empty iterator
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
       mockTableClient.createEntity.mockResolvedValue({});
 
       const request = createMockRequest(requestBody);
@@ -100,13 +85,7 @@ describe('createCandidate Function', () => {
         interviewStage: InterviewStage.TECHNICAL,
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          // Empty iterator
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
       mockTableClient.createEntity.mockResolvedValue({});
 
       const request = createMockRequest(requestBody);
@@ -248,13 +227,7 @@ describe('createCandidate Function', () => {
         email: 'existing@example.com',
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
 
       const request = createMockRequest(requestBody);
       const response = await createCandidate(request, mockContext);
@@ -273,13 +246,7 @@ describe('createCandidate Function', () => {
         position: 'Developer',
       };
 
-      const mockAsyncIterator = {
-        [Symbol.asyncIterator]: async function* () {
-          // Empty iterator
-        },
-      };
-
-      mockTableClient.listEntities.mockReturnValue(mockAsyncIterator);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([]));
       mockTableClient.createEntity.mockRejectedValue(new Error('Database connection failed'));
 
       const request = createMockRequest(requestBody);
