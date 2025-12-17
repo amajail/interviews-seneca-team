@@ -1,6 +1,7 @@
 import { HttpRequest, InvocationContext } from '@azure/functions';
 import { updateCandidate } from './updateCandidate';
 import { CandidateStatus, InterviewStage } from '../../domain/entities/Candidate';
+import { createMockContext, createMockAsyncIterator, getMockTableClient } from './testHelpers';
 
 // Mock dependencies
 jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
@@ -17,12 +18,8 @@ describe('updateCandidate Function', () => {
   let mockTableClient: any;
 
   beforeEach(() => {
-    mockContext = {
-      log: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
+    mockContext = createMockContext();
+    mockTableClient = getMockTableClient();
     jest.clearAllMocks();
   });
 
@@ -59,12 +56,7 @@ describe('updateCandidate Function', () => {
       };
 
       // Mock findById
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
 
       // Mock update
       mockTableClient.updateEntity.mockResolvedValue({});
@@ -99,12 +91,7 @@ describe('updateCandidate Function', () => {
         updatedAt: new Date('2025-01-01'),
       };
 
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
       mockTableClient.updateEntity.mockResolvedValue({});
 
       const request = createMockRequest(candidateId, updateData);
@@ -140,12 +127,7 @@ describe('updateCandidate Function', () => {
         updatedAt: new Date('2025-01-01'),
       };
 
-      const mockListEntities = {
-        [Symbol.asyncIterator]: async function* () {
-          yield existingCandidate;
-        },
-      };
-      mockTableClient.listEntities.mockReturnValue(mockListEntities);
+      mockTableClient.listEntities.mockReturnValue(createMockAsyncIterator([existingCandidate]));
       mockTableClient.updateEntity.mockResolvedValue({});
 
       const request = createMockRequest(candidateId, updateData);

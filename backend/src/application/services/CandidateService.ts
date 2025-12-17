@@ -87,4 +87,8 @@ export class CandidateService {
 
     return updatedCandidate;
   }
+
+  async deleteCandidate(id: string): Promise<void> {
+    await this.candidateRepository.delete(id);
+  }
 }

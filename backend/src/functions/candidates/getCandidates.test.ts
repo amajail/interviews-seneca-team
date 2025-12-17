@@ -1,6 +1,7 @@
 import { HttpRequest, InvocationContext } from '@azure/functions';
 import { getCandidates } from './getCandidates';
 import { CandidateStatus, InterviewStage } from '../../domain/entities/Candidate';
+import { createMockContext, getMockTableClient } from './testHelpers';
 
 // Mock dependencies
 jest.mock('../../infrastructure/config/tableStorageConfig', () => ({
@@ -14,12 +15,8 @@ describe('getCandidates Function', () => {
   let mockTableClient: any;
 
   beforeEach(() => {
-    mockContext = {
-      log: jest.fn(),
-      error: jest.fn(),
-    } as any;
-
-    mockTableClient = require('../../infrastructure/config/tableStorageConfig').tableClient;
+    mockContext = createMockContext();
+    mockTableClient = getMockTableClient();
     jest.clearAllMocks();
   });
 
