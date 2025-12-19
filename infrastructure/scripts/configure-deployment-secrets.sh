@@ -43,7 +43,7 @@ SWA_NAME=$(az staticwebapp list \
   --query "[0].name" \
   -o tsv 2>/dev/null)
 
-if [ -z "$SWA_NAME" ]; then
+if [[ -z "$SWA_NAME" ]]; then
   echo "❌ Static Web App not found in resource group: $RESOURCE_GROUP"
   echo "Please ensure the infrastructure has been deployed first."
   exit 1
@@ -57,7 +57,7 @@ DEPLOYMENT_TOKEN=$(az staticwebapp secrets list \
   --query "properties.apiKey" \
   -o tsv)
 
-if [ -z "$DEPLOYMENT_TOKEN" ]; then
+if [[ -z "$DEPLOYMENT_TOKEN" ]]; then
   echo "❌ Failed to retrieve deployment token"
   exit 1
 fi
