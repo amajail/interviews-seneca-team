@@ -19,7 +19,7 @@ APP_ID=$(az ad app list \
   --query "[0].appId" \
   -o tsv)
 
-if [ -z "$APP_ID" ]; then
+if [[ -z "$APP_ID" ]]; then
   echo "❌ App Registration not found: $APP_NAME"
   echo "Please run setup-oidc.sh first."
   exit 1

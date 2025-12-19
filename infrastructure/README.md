@@ -76,6 +76,21 @@ az deployment sub create \
   --parameters parameters/dev.bicepparam
 ```
 
+### Post-Deployment Configuration
+
+After the infrastructure is deployed for the first time, configure deployment secrets:
+
+```bash
+./scripts/configure-deployment-secrets.sh
+```
+
+This script will:
+- Retrieve the Static Web App deployment token from Azure
+- Set `AZURE_STATIC_WEB_APPS_API_TOKEN_DEV` GitHub secret
+- Enable the frontend deployment workflow
+
+**Note**: The `deploy-dev.yml` workflow will skip deployment until this secret is configured.
+
 ## Infrastructure Components
 
 - **Storage Account**: Table Storage for candidate data

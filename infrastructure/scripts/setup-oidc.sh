@@ -27,7 +27,7 @@ APP_ID=$(az ad app create \
   --query appId \
   -o tsv)
 
-if [ -z "$APP_ID" ]; then
+if [[ -z "$APP_ID" ]]; then
   echo "❌ Failed to create App Registration"
   exit 1
 fi

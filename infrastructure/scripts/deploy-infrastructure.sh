@@ -16,7 +16,7 @@ LOCATION="eastus"
 APP_NAME="intseneca"
 
 # Check if environment parameter is provided
-if [ -z "$1" ]; then
+if [[ -z "$1" ]]; then
   echo -e "${RED}Error: Environment parameter required${NC}"
   echo "Usage: $0 <environment>"
   echo "Environments: dev, staging, prod"
@@ -134,7 +134,7 @@ az deployment group create \
 
 DEPLOYMENT_STATUS=$?
 
-if [ $DEPLOYMENT_STATUS -eq 0 ]; then
+if [[ $DEPLOYMENT_STATUS -eq 0 ]]; then
   echo ""
   echo -e "${GREEN}╔════════════════════════════════════════════════╗${NC}"
   echo -e "${GREEN}║  Deployment Successful! 🎉                     ║${NC}"
