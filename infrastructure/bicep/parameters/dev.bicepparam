@@ -9,8 +9,8 @@ param instance = '001'
 
 // Cost-optimized SKUs for development
 param storageAccountSku = 'Standard_LRS'
-param functionAppSku = 'Y1' // Consumption plan
-param staticWebAppSku = 'Free'
+param functionAppSku = 'B1' // Basic plan (~$13/month) - Consumption (Y1) requires quota
+param staticWebAppSku = 'Standard' // Standard plan (~$9/month) - Free SKU not available
 
 // Shorter retention for dev
 param appInsightsRetentionDays = 30

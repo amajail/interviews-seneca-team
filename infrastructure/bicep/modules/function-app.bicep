@@ -18,6 +18,9 @@ param environment string
 @description('App Service Plan SKU')
 @allowed([
   'Y1'  // Consumption plan
+  'B1'  // Basic plan
+  'B2'
+  'B3'
   'EP1' // Elastic Premium
   'EP2'
   'EP3'
@@ -45,7 +48,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   })
   sku: {
     name: appServicePlanSku
-    tier: appServicePlanSku == 'Y1' ? 'Dynamic' : 'ElasticPremium'
+    tier: appServicePlanSku == 'Y1' ? 'Dynamic' : (startsWith(appServicePlanSku, 'B') ? 'Basic' : 'ElasticPremium')
   }
   kind: 'functionapp'
   properties: {
