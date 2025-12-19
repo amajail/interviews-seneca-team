@@ -3,14 +3,14 @@
 using '../main.bicep'
 
 param environment = 'dev'
-param location = 'eastus'
+param location = 'westus2'  // Changed from eastus to avoid quota limitations
 param appName = 'intseneca'
 param instance = '001'
 
 // Cost-optimized SKUs for development
 param storageAccountSku = 'Standard_LRS'
-param functionAppSku = 'B1' // Basic plan (~$13/month) - Consumption (Y1) requires quota
-param staticWebAppSku = 'Standard' // Standard plan (~$9/month) - Free SKU not available
+param functionAppSku = 'Y1' // Consumption plan (trying West US 2 region)
+param staticWebAppSku = 'Free' // Attempting Free tier in West US 2 region
 
 // Shorter retention for dev
 param appInsightsRetentionDays = 30
