@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: development
-      url: https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-eastus/overview
+      url: https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-westus2/overview
 
     steps:
       - name: Checkout code
@@ -40,8 +40,8 @@ jobs:
       - name: Create Resource Group
         run: |
           az group create \
-            --name rg-intseneca-dev-eastus \
-            --location eastus \
+            --name rg-intseneca-dev-westus2 \
+            --location westus2 \
             --tags environment=dev application=interview-tracking managedBy=bicep-pipeline
 
       - name: Validate Bicep Template
@@ -55,7 +55,7 @@ jobs:
           cd infrastructure/bicep
           echo "📋 Running What-If analysis..."
           az deployment group what-if \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --template-file main.bicep \
             --parameters parameters/dev.bicepparam \
             --no-pretty-print
@@ -70,7 +70,7 @@ jobs:
 
           az deployment group create \
             --name "$DEPLOYMENT_NAME" \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --template-file main.bicep \
             --parameters parameters/dev.bicepparam \
             --verbose
@@ -84,20 +84,20 @@ jobs:
 
           echo "📊 Deployment Outputs:"
           az deployment group show \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --name ${{ steps.deploy.outputs.deployment_name }} \
             --query properties.outputs \
             --output table
 
           # Extract outputs for use in subsequent jobs
           FUNCTION_APP_NAME=$(az deployment group show \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --name ${{ steps.deploy.outputs.deployment_name }} \
             --query properties.outputs.functionAppName.value \
             --output tsv)
 
           STATIC_WEB_APP_NAME=$(az deployment group show \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --name ${{ steps.deploy.outputs.deployment_name }} \
             --query properties.outputs.staticWebAppName.value \
             --output tsv)
@@ -110,7 +110,7 @@ jobs:
           echo "## 🎉 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Environment**: Development" >> $GITHUB_STEP_SUMMARY
-          echo "**Resource Group**: rg-intseneca-dev-eastus" >> $GITHUB_STEP_SUMMARY
+          echo "**Resource Group**: rg-intseneca-dev-westus2" >> $GITHUB_STEP_SUMMARY
           echo "**Function App**: ${{ steps.outputs.outputs.function_app_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Static Web App**: ${{ steps.outputs.outputs.static_web_app_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -120,4 +120,4 @@ jobs:
           echo "3. Verify application is running" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
-          echo "- [Azure Portal - Resource Group](https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-eastus/overview)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Azure Portal - Resource Group](https://portal.azure.com/#@d121fc0e-46f1-4db7-83df-a97fb17a8b4e/resource/subscriptions/46c5d4e3-1b2f-4e20-9fe4-6b63f9fb71f6/resourceGroups/rg-intseneca-dev-westus2/overview)" >> $GITHUB_STEP_SUMMARY

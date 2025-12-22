@@ -73,13 +73,13 @@ jobs:
 
           # Ensure resource group exists for validation
           az group create \
-            --name rg-intseneca-dev-eastus \
+            --name rg-intseneca-dev-westus2 \
             --location eastus \
             --tags environment=dev validation=true
 
           # Validate deployment
           az deployment group validate \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --template-file main.bicep \
             --parameters parameters/dev.bicepparam
 
@@ -90,7 +90,7 @@ jobs:
           echo "📋 Running What-If analysis..."
 
           az deployment group what-if \
-            --resource-group rg-intseneca-dev-eastus \
+            --resource-group rg-intseneca-dev-westus2 \
             --template-file main.bicep \
             --parameters parameters/dev.bicepparam \
             --no-pretty-print > whatif-results.txt 2>&1 || true
